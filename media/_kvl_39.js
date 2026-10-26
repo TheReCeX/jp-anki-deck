@@ -1,0 +1,2 @@
+/* KANJIDIC2 (c) EDRDG, CC BY-SA 4.0: Bedeutungen ins Deutsche übertragen; Radikal-Form/Position aus KanjiVG (CC BY-SA 3.0), Lücken aus BabelStone IDS (Andrew West); JLPT-Stufen inoffiziell nach Jonathan Waller (tanos.co.uk, CC BY) */
+(function(d){var K=window.KVX=window.KVX||{};for(var k in d)K[k]=d[k];})({"㤗":[0,"⺗","b"],"㤚":[["Freude","Entzücken","Befriedigung"],"忄","l",0,"忄行"],"㥯":[["sorgfältig","mitfühlend","sich interessieren für","umsichtig","vorsichtig","besorgt und betrübt"],"心","b"]});

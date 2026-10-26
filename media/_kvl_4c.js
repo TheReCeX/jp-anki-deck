@@ -1,0 +1,2 @@
+/* KANJIDIC2 (c) EDRDG, CC BY-SA 4.0: Bedeutungen ins Deutsche übertragen; Radikal-Form/Position aus KanjiVG (CC BY-SA 3.0), Lücken aus BabelStone IDS (Andrew West); JLPT-Stufen inoffiziell nach Jonathan Waller (tanos.co.uk, CC BY) */
+(function(d){var K=window.KVX=window.KVX||{};for(var k in d)K[k]=d[k];})({"䰗":[["Los","Fahrkarte","Lose ziehen"],"鬥","kamae",0,"鬥亀"],"䰠":[["Gott","Geist","Unsterblicher","Berggottheit"],"鬼","nyo",0,"鬼申"],"䳄":[["eine Wasservogelart","mit schwarzer Farbe","weiblich","frauenähnlich"],"鳥","r",0,"此鳥"],"䳑":[["fasanenartiger Vogel"],"鳥","r",0,"有鳥"]});

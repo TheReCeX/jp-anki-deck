@@ -18,9 +18,9 @@
 | **diglabo-kanji-data** · based on 文部科学省「音訓の小・中・高等学校段階別割り振り表」(2017) | School grades of kanji | CC BY-SA 4.0 | machine-readable version by diglabo-kanji-data |
 | [**JLPT lists**](https://www.tanos.co.uk/jlpt/) · Jonathan Waller | Unofficial JLPT levels | [CC BY](https://creativecommons.org/licenses/by/4.0/) | obtained via [davidluzgouveia/kanji-data](https://github.com/davidluzgouveia/kanji-data) (MIT) |
 | [**BabelStone IDS**](https://www.babelstone.co.uk/CJK/IDS.TXT) · Andrew West (version 2025-06-27, Unicode 16.0) | Kanji structure where KanjiVG has no data | free to use | per the file header: facts not protected by copyright, no attribution required, given here anyway |
-| [**Wadoku**](https://www.wadoku.de) · Ulrich Apel, co-authors, Wadoku e.V. | Some German word meanings in the vocabulary | [Wadoku.de data license 1.0](LICENSES/Wadoku-Datenlizenz-1.0.txt) | partly taken over, manually translated and edited. **Free and non-commercial distribution only, the license must accompany it** |
+| [**Wadoku**](https://www.wadoku.de) · Ulrich Apel, co-authors, Wadoku e.V. | Some German word meanings of the planned Genki/Tobira vocabulary (not part of the current release) | [Wadoku.de data license 1.0](LICENSES/Wadoku-Datenlizenz-1.0.txt) | partly taken over, manually translated and edited. **Free and non-commercial distribution only, the license must accompany it** |
 
-Vocabulary selection follows the textbooks *Genki* (The Japan Times) and *Tobira* (Kurosio Publishers). The rights to these works belong to their holders. This deck is not affiliated with them.
+The planned vocabulary (not yet included, see README) follows the textbooks *Genki* (The Japan Times) and *Tobira* (Kurosio Publishers). The rights to these works belong to their holders. This deck is not affiliated with them.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -33,7 +33,7 @@ Vocabulary selection follows the textbooks *Genki* (The Japan Times) and *Tobira
 * KANJIDIC2 meanings translated into German (CC BY-SA 4.0 also applies to the translations)
 * KanjiVG stroke data converted to compact JS files
 * Selection limited to the kanji that appear in the deck
-* Wadoku entries shortened or edited for the cards
+* Wadoku entries shortened or edited for the cards (planned vocabulary)
 
 ## Add-on "Kanji-Wortindex"
 

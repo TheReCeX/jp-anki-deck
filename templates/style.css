@@ -1,0 +1,575 @@
+/* ====== Schriften (liegen in collection.media; ohne sie greifen die Fallbacks) ====== */
+@font-face { font-family: 'Sawarabi Mincho';     src: url('_SawarabiMincho-Regular.ttf') format('truetype'), url('SawarabiMincho-Regular.ttf') format('truetype'); }   /* liegt im Deck (SIL OFL 1.1); „_“ = Anki „Medien prüfen“ löscht sie nicht */
+
+/* ====== Basis-Werte (Standardgrößen/-farben; Live-Änderungen laufen über das ⚙-Panel in der Karte) ====== */
+.card {
+  --jp-font: 'Sawarabi Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', 'Noto Serif CJK JP',
+             'Source Han Serif JP', 'MS PMincho', 'IPA Mincho', serif;
+  --ui-font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
+
+  --jp-size:     clamp(40px, 13vw, 64px);
+  --stroke-size: clamp(56px, 22vw, 96px);
+  --de-size:     clamp(18px, 5vw, 22px);
+  --jp-scale: 1;  --de-scale: 1;  --acc-h: 6;
+
+  --bg:#faf7f2; --ink:#1f1d1a; --muted:#7a746b; --line:#ddd5c8; --chip-bg:#efe9df; --btn-bg:#ffffff;
+  --accent: hsl(var(--acc-h) 62% 44%);
+  --shadow: 0 -8px 30px rgba(0,0,0,.18);
+  --tint: rgba(110,110,120,.13);  --c-light:#fff; --c-dark:#000;  --gl:1; --gd:1;
+  --spring: cubic-bezier(.34,1.56,.64,1);
+}
+.night_mode, .nightMode, .card.night_mode, .card.nightMode {
+  --bg:#17181b; --ink:#ece8e1; --muted:#9a948a; --line:#34343a; --chip-bg:#25262b; --btn-bg:#202126;
+  --accent: hsl(var(--acc-h) 78% 70%);
+  --shadow: 0 -8px 30px rgba(0,0,0,.6);
+  --tint: rgba(255,255,255,.09);  --gl:.3; --gd:2;
+}
+/* Erzwungenes Theme aus dem Panel (muss nach den Night-Regeln stehen) */
+.card.jp-light { --bg:#faf7f2; --ink:#1f1d1a; --muted:#7a746b; --line:#ddd5c8; --chip-bg:#efe9df; --btn-bg:#ffffff; --accent:hsl(var(--acc-h) 62% 44%); --shadow:0 -8px 30px rgba(0,0,0,.18); --tint:rgba(110,110,120,.13); --gl:1; --gd:1; }
+.card.jp-dark  { --bg:#17181b; --ink:#ece8e1; --muted:#9a948a; --line:#34343a; --chip-bg:#25262b; --btn-bg:#202126; --accent:hsl(var(--acc-h) 78% 70%); --shadow:0 -8px 30px rgba(0,0,0,.6); --tint:rgba(255,255,255,.09); --gl:.3; --gd:2; }
+
+/* ====== Grundlayout ====== */
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; min-height: 100%; }
+body { min-height: 0; }
+.card {
+  margin: 0; min-height: 0; box-sizing: border-box;
+  padding: 46px max(16px, env(safe-area-inset-right)) 28px max(16px, env(safe-area-inset-left));
+  background: var(--bg); color: var(--ink);
+  font-family: var(--ui-font); line-height: 1.5; text-align: center;
+}
+.wrap { width: var(--jp-w, auto); max-width: var(--jp-wmax, 34rem); margin: 0 auto; box-sizing: border-box; }
+
+/* Textfarbe direkt auf den Karteninhalt (schlägt Anki-eigene Night-Mode-Farben auf body/.card) */
+.jp-root, .jp-root .jp, .jp-root .de, .jp-root .suru { color: var(--ink) !important; }
+.jp-root .suru-mark { color: var(--muted) !important; }
+.jp-root .suru .lbl { color: var(--accent) !important; }
+.jp-root ruby rt { color: var(--accent) !important; }
+.jp-root .chip { color: var(--muted) !important; }
+
+/* ====== Antwort erst auf der Rückseite (Rückseite = <div id="jp-back"></div>{{FrontSide}}) ====== */
+.ans { display: none; }
+#jp-back ~ .jp-root .ans    { display: block; }
+#jp-back ~ .jp-root .q-only { display: none !important; }
+
+/* ====== Japanisch ====== */
+.jp { font-family: var(--jp-font); font-size: calc(var(--jp-size) * var(--jp-scale)); line-height: 1.7; overflow-wrap: anywhere; }
+ruby rt { font-size: .36em; color: var(--accent); letter-spacing: .02em; }
+.jp-nofuri ruby rt { display: none; }
+.suru-mark { color: var(--muted); font-size: .6em; white-space: nowrap; }
+
+/* ====== Bedeutung (Standard: gleiche Mincho-Schrift wie im Original) ====== */
+.de, .suru { font-family: var(--jp-font); }
+.jp-desans .de, .jp-desans .suru { font-family: var(--ui-font); }
+.de { font-size: calc(var(--de-size) * var(--de-scale)); line-height: 1.55; overflow-wrap: anywhere; hyphens: auto; -webkit-hyphens: auto; }
+.de.big { font-size: calc(var(--de-size) * var(--de-scale) * 1.12); }
+.jp-left .de { text-align: left; }
+.suru { display: block; width: fit-content; max-width: 100%; box-sizing: border-box; margin: 14px auto 0; padding: 8px 18px 10px; border-radius: 18px; background: var(--chip-bg);
+        text-align: center; font-size: calc(var(--de-size) * var(--de-scale) * .92); line-height: 1.5; overflow-wrap: anywhere; }
+.jp-left .suru { margin-left: 0; margin-right: auto; text-align: left; }
+.suru .lbl { display: inline-block; vertical-align: .1em; margin: 0 8px 0 0; padding: 1px 9px; border-radius: 999px; font-family: var(--ui-font); font-size: .66em; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+             color: var(--accent); background: hsl(var(--acc-h) 70% 52% / .14); }
+hr.answer { border: 0; border-top: 1px solid var(--line); margin: 18px 0; width: 100%; }
+
+/* ====== Buttons (Glas-Pille mit Feder-Druck) ====== */
+.actions { margin-top: 22px; }
+.btn { -webkit-appearance: none; appearance: none; min-height: 46px; min-width: 46px; padding: 8px 24px; font: inherit; font-family: var(--ui-font); font-size: 15px; font-weight: 500;
+       color: var(--ink); background: var(--tint); border: 0; border-radius: 999px; cursor: pointer; box-shadow: var(--g-bar);
+       -webkit-backdrop-filter: blur(8px) saturate(150%); backdrop-filter: blur(8px) saturate(150%);
+       -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: transform .45s var(--spring), color .16s, box-shadow .3s; }
+@media (hover: hover) { .btn:hover { color: var(--accent); } }
+.btn:active { transform: scale(.94); color: var(--accent); }
+.chips { margin-top: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.jp-nochips .chips { display: none; }
+.chip { padding: 2px 10px; font-size: 12px; line-height: 1.6; color: var(--muted); background: var(--chip-bg); border-radius: 999px; white-space: nowrap; font-family: var(--ui-font); }
+
+/* ====== Glas-Schatten (Liquid-Glass) ====== */
+.card {
+  --g-bar:  inset 0 0 0 1px rgba(255,255,255,.35), inset 0 2px 3px rgba(255,255,255,.35), inset 0 -2px 5px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.10);
+  --g-pill: inset 0 0 0 1px rgba(255,255,255,.5), inset 0 2px 2px rgba(255,255,255,.5), inset 0 -3px 5px rgba(0,0,0,.10), 0 3px 8px rgba(0,0,0,.14);
+}
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+  .card {
+    --g-bar:
+      inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--gl) * 10%), transparent),
+      inset 1.8px 3px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--gl) * 90%), transparent),
+      inset -2px -2px 0px -2px color-mix(in srgb, var(--c-light) calc(var(--gl) * 80%), transparent),
+      inset -3px -8px 1px -6px color-mix(in srgb, var(--c-light) calc(var(--gl) * 60%), transparent),
+      inset -0.3px -1px 4px 0px color-mix(in srgb, var(--c-dark) calc(var(--gd) * 12%), transparent),
+      inset -1.5px 2.5px 0px -2px color-mix(in srgb, var(--c-dark) calc(var(--gd) * 20%), transparent),
+      inset 0px 3px 4px -2px color-mix(in srgb, var(--c-dark) calc(var(--gd) * 20%), transparent),
+      inset 2px -6.5px 1px -4px color-mix(in srgb, var(--c-dark) calc(var(--gd) * 10%), transparent),
+      0px 1px 5px 0px color-mix(in srgb, var(--c-dark) calc(var(--gd) * 10%), transparent),
+      0px 6px 16px 0px color-mix(in srgb, var(--c-dark) calc(var(--gd) * 8%), transparent);
+    --g-pill:
+      inset 0 0 0 1px color-mix(in srgb, var(--c-light) calc(var(--gl) * 10%), transparent),
+      inset 2px 1px 0px -1px color-mix(in srgb, var(--c-light) calc(var(--gl) * 90%), transparent),
+      inset -1.5px -1px 0px -1px color-mix(in srgb, var(--c-light) calc(var(--gl) * 80%), transparent),
+      inset -2px -6px 1px -5px color-mix(in srgb, var(--c-light) calc(var(--gl) * 60%), transparent),
+      inset -1px 2px 3px -1px color-mix(in srgb, var(--c-dark) calc(var(--gd) * 20%), transparent),
+      inset 0px -4px 1px -2px color-mix(in srgb, var(--c-dark) calc(var(--gd) * 10%), transparent),
+      0px 3px 6px 0px color-mix(in srgb, var(--c-dark) calc(var(--gd) * 8%), transparent);
+  }
+}
+@supports (transition-timing-function: linear(0, 1)) {
+  .card { --spring: linear(0, .6091 3.69%, 1.0259 7.24%, 1.1733 9.05%, 1.283 10.92%, 1.3562 12.87%, 1.3948 14.95%, 1.3999 17.16%, 1.3202 22.27%, 1.1394 29.39%, 1.0582 33.17%, .9943 37.45%, .9593 41.92%, .9505 45.08%, .9517 48.7%, .9924 63.02%, 1.0046 71.2%, 1.0061 78.24%, 1); }
+}
+.jp-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(100%); white-space: nowrap; }
+
+/* ====== Einstellungs-Panel ====== */
+.jp-gear { position: fixed; top: 8px; right: 8px; z-index: 50; width: 42px; height: 42px; padding: 0; display: flex; align-items: center; justify-content: center;
+           background: var(--tint); border: 0; border-radius: 50%; color: var(--muted); cursor: pointer; box-shadow: var(--g-pill);
+           -webkit-backdrop-filter: blur(8px) saturate(150%); backdrop-filter: blur(8px) saturate(150%);
+           -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: transform .45s var(--spring), color .16s; }
+@media (hover: hover) { .jp-gear:hover { color: var(--accent); } } .jp-gear:active { transform: scale(.9) rotate(-12deg); color: var(--accent); }
+.jp-gear svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+.jp-scrim { position: fixed; inset: 0; z-index: 90; background: rgba(0,0,0,.30); display: none; -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); }
+.jp-panel { position: fixed; left: 0; right: 0; bottom: 0; margin: 0 auto; width: 100%; max-width: 30rem; max-height: 82vh; overflow: hidden; flex-direction: column;
+            z-index: 100; display: none; box-sizing: border-box; background: var(--bg); color: var(--ink); border-radius: 26px 26px 0 0; box-shadow: var(--shadow), inset 0 1px 0 var(--line);
+            padding: 0; text-align: left; font-family: var(--ui-font); font-size: 15px; line-height: 1.4; }
+@supports (color: color-mix(in srgb, red 50%, blue)) and ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .jp-panel { background: color-mix(in srgb, var(--bg) 93%, transparent); -webkit-backdrop-filter: blur(22px) saturate(160%); backdrop-filter: blur(22px) saturate(160%); }
+}
+.jp-open .jp-scrim { display: block; }
+.jp-open .jp-panel { display: flex; }
+.jp-ph { flex: none; display: flex; align-items: center; justify-content: space-between; padding: 14px 18px 10px; border-bottom: 1px solid var(--line); }
+/* Scrollbereich unter der Kopfzeile */
+.jp-pb { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding: 0 18px max(18px, env(safe-area-inset-bottom)); }
+.jp-pb > .jp-row:first-child { border-top: 0; }
+.jp-ph b { font-size: 17px; }
+.jp-x { position: relative; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; color: var(--muted); font-size: 17px; line-height: 1; cursor: pointer;
+        background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,0)), var(--tint); box-shadow: var(--g-bar);
+        -webkit-backdrop-filter: blur(8px) saturate(150%); backdrop-filter: blur(8px) saturate(150%); -webkit-tap-highlight-color: transparent;
+        transition: transform .45s var(--spring), color .16s, background-color .3s; }
+@media (hover: hover) { .jp-x:hover { color: var(--accent); } }
+.jp-x:active { transform: scale(.88); color: var(--accent); background-color: hsl(var(--acc-h) 70% 52% / .2); }
+.jp-row { position: relative; z-index: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.jp-row > .jp-l { flex: 1 1 8rem; }
+.jp-ctl { min-width: 0; flex: 1 1 11rem; display: flex; justify-content: flex-end; align-items: center; gap: 12px; }
+
+/* --- Auswahl: gleitende Glas-Pille, wird in Bewegungsrichtung gestaucht/gedehnt --- */
+.jp-seg { position: relative; display: grid; grid-template-columns: repeat(var(--n), var(--ow)); margin: 0; padding: 4px; border: 0; min-width: 0; border-radius: 999px;
+          background: var(--tint); box-shadow: var(--g-bar); -webkit-backdrop-filter: blur(8px) saturate(150%); backdrop-filter: blur(8px) saturate(150%); }
+.jp-seg::after { content: ''; position: absolute; top: 4px; bottom: 4px; border-radius: 999px; pointer-events: none; z-index: 0;
+                 left: calc(4px + var(--i) * var(--ow)); right: calc(4px + (var(--n) - 1 - var(--i)) * var(--ow));
+                 background: hsl(var(--acc-h) 70% 52% / .24); box-shadow: var(--g-pill);
+                 transition: left .42s cubic-bezier(.5, 0, .2, 1), right .42s cubic-bezier(.5, 0, .2, 1), background-color .3s; }
+/* Vorderkante läuft voraus, Hinterkante zieht nach: die Pille dehnt sich nur zwischen Start und Ziel, nie darüber hinaus */
+.jp-seg[data-dir="r"]::after { transition: left .44s cubic-bezier(.6, 0, .2, 1) .04s, right .3s cubic-bezier(.3, 0, .2, 1), background-color .3s; }
+.jp-seg[data-dir="l"]::after { transition: right .44s cubic-bezier(.6, 0, .2, 1) .04s, left .3s cubic-bezier(.3, 0, .2, 1), background-color .3s; }
+@keyframes jp-squish { 0% { scale: 1 1; } 50% { scale: 1.2 1; } 100% { scale: 1 1; } }
+.jp-o { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; height: 38px; border-radius: 999px; cursor: pointer; color: var(--muted);
+        font-size: 14px; -webkit-tap-highlight-color: transparent; transition: color .16s; }
+@media (hover: hover) { .jp-o:hover { color: var(--accent); } } .jp-o.on { color: var(--ink); font-weight: 600; cursor: default; }
+.jp-oi { display: flex; align-items: center; justify-content: center; transition: transform .2s cubic-bezier(.5, 0, 0, 1); }
+@media (hover: hover) { .jp-o:hover .jp-oi { transform: scale(1.12); } } .jp-o.on .jp-oi { transform: none; }
+.jp-oi svg { width: 22px; height: 22px; display: block; }
+.jp-o input:focus-visible + .jp-oi { outline: 2px solid hsl(var(--acc-h) 70% 52% / .6); outline-offset: 2px; border-radius: 999px; }
+
+/* --- Schalter: wie die Auswahl-Leiste, nur ohne Inhalt (Glas-Leiste + gleitende Pille) --- */
+.jp-tog { --ow: 34px; position: relative; flex: none; width: calc(var(--ow) * 2 + 8px); height: 36px; padding: 0; border: 0; border-radius: 999px; cursor: pointer;
+          background: var(--tint); box-shadow: var(--g-bar); -webkit-backdrop-filter: blur(8px) saturate(150%); backdrop-filter: blur(8px) saturate(150%);
+          -webkit-tap-highlight-color: transparent; }
+.jp-tog::after { content: ''; position: absolute; left: 4px; top: 4px; bottom: 4px; width: var(--ow); border-radius: 999px; pointer-events: none;
+                 background: var(--c-off, rgba(120,120,120,.22)); box-shadow: var(--g-pill); transform-origin: left center;
+                 transition: transform .4s cubic-bezier(1, 0, .4, 1), background-color .3s; }
+.jp-tog.on::after { transform: translateX(100%); transform-origin: right center; background: hsl(var(--acc-h) 70% 52% / .34); }
+.jp-tog.go::after { animation: jp-squish .44s ease; }
+.jp-tog:focus-visible { outline: 2px solid hsl(var(--acc-h) 70% 52% / .6); outline-offset: 2px; }
+
+/* --- Slider (Glas-Spur, Glas-Griff) --- */
+.jp-rg { -webkit-appearance: none; appearance: none; width: 100%; max-width: 10.5rem; height: 34px; margin: 0; background: transparent; cursor: pointer; touch-action: pan-y; -webkit-tap-highlight-color: transparent; --f: .5; --e: calc(var(--f) * (100% - 44px) + 22px); }
+.jp-rg::-webkit-slider-runnable-track { height: 12px; border-radius: 999px; box-shadow: var(--g-bar);
+  background: linear-gradient(90deg, hsl(var(--acc-h) 72% 52% / .62) var(--e), transparent var(--e)), var(--tint); }
+.jp-rg::-webkit-slider-thumb { -webkit-appearance: none; width: 44px; height: 28px; margin-top: -8px; border-radius: 999px; border: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.78));
+  box-shadow: var(--g-pill), 0 3px 8px rgba(0,0,0,.22); transition: transform .3s var(--spring); }
+.jp-rg:active::-webkit-slider-thumb { transform: scaleX(1.18) scaleY(1.08); transition: transform .06s ease-out; }
+.jp-rg::-moz-range-track { height: 12px; border-radius: 999px; box-shadow: var(--g-bar); background: var(--tint); }
+.jp-rg::-moz-range-progress { height: 12px; border-radius: 999px; background: hsl(var(--acc-h) 72% 52% / .62); }
+.jp-rg::-moz-range-thumb { width: 44px; height: 28px; border: 0; border-radius: 999px; background: rgba(255,255,255,.9); box-shadow: var(--g-pill), 0 3px 8px rgba(0,0,0,.22); }
+.jp-val { min-width: 3.4em; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* --- Farbpunkte --- */
+.jp-sw { display: flex; gap: 10px; }
+.jp-sw button { width: 32px; height: 32px; border-radius: 50%; border: 0; padding: 0; cursor: pointer;
+                box-shadow: inset 0 2px 3px rgba(255,255,255,.5), inset 0 -3px 5px rgba(0,0,0,.2), 0 2px 6px rgba(0,0,0,.22); transition: transform .45s var(--spring), outline-color .2s;
+                outline: 2px solid transparent; outline-offset: 3px; }
+.jp-sw button.on { transform: scale(1.15); outline-color: var(--ink); }
+.jp-sw button:active { transform: scale(.92); }
+
+.jp-pf { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 0 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+.jp-reset { border: 0; background: var(--tint); color: var(--ink); font: inherit; font-size: 14px; font-weight: 500; border-radius: 999px; padding: 8px 18px; min-height: 42px; cursor: pointer;
+            box-shadow: var(--g-bar); transition: transform .45s var(--spring), color .16s; }
+@media (hover: hover) { .jp-reset:hover { color: var(--accent); } } .jp-reset:active { transform: scale(.94); }
+.jp-drag .jp-panel, .jp-drag .jp-panel *, .jp-drag .jp-scrim { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+@media (prefers-reduced-motion: reduce) { .jp-seg::after, .jp-tog::after, .btn, .jp-sw button, .jp-gear, .jp-x, .jp-reset, .jp-rg::-webkit-slider-thumb { transition: none !important; animation: none !important; } }
+@media (max-width: 340px) { .card { padding-left: 10px; padding-right: 10px; } .btn { padding: 8px 16px; } }
+
+/* Hinweis: Übersetzung fehlt in der gewählten Sprache, andere wird gezeigt */
+.jp-fb { display: inline-block; vertical-align: .18em; margin-left: .35em; padding: 1px 6px; border-radius: 999px; font-family: var(--ui-font); font-size: .5em; font-weight: 600; letter-spacing: .06em; line-height: 1.5;
+         color: var(--muted) !important; background: var(--chip-bg); box-shadow: inset 0 0 0 1px var(--line); cursor: help; white-space: nowrap; }
+
+/* Anki-eigene button:hover/:focus-Regeln (dunkler Hintergrund) dürfen unsere Glas-Buttons nicht überschreiben */
+.jp-root .btn:hover, .jp-root .btn:focus, .jp-root .btn:active,
+.jp-root .jp-reset:hover, .jp-root .jp-reset:focus, .jp-root .jp-reset:active,
+.jp-root .jp-gear:hover, .jp-root .jp-gear:focus, .jp-root .jp-gear:active { background: var(--tint) !important; }
+.jp-root .jp-x:hover, .jp-root .jp-x:focus { background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,0)), var(--tint) !important; }
+.jp-root .jp-x:active { background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,0)), hsl(var(--acc-h) 70% 52% / .2) !important; }
+.jp-root .btn:hover, .jp-root .btn:focus, .jp-root .btn:active, .jp-root .jp-reset:hover, .jp-root .jp-reset:focus, .jp-root .jp-x:hover, .jp-root .jp-x:focus { box-shadow: var(--g-bar) !important; }
+.jp-root .jp-gear:hover, .jp-root .jp-gear:focus { box-shadow: var(--g-pill) !important; }
+.jp-root .btn:focus, .jp-root .jp-reset:focus, .jp-root .jp-x:focus, .jp-root .jp-gear:focus { outline: none; }
+.jp-root .btn:focus-visible, .jp-root .jp-reset:focus-visible, .jp-root .jp-x:focus-visible, .jp-root .jp-gear:focus-visible { outline: 2px solid hsl(var(--acc-h) 70% 52% / .6); outline-offset: 2px; }
+.jp-root .jp-tog:hover, .jp-root .jp-tog:focus, .jp-root .jp-tog:active { background: var(--tint) !important; box-shadow: var(--g-bar) !important; outline: none; }
+.jp-root .jp-tog:focus-visible { outline: 2px solid hsl(var(--acc-h) 70% 52% / .6); outline-offset: 2px; }
+
+/* ====== Strichfolge-Popup (Antippen eines Kanji) ====== */
+.kj { cursor: pointer; border-radius: 8px; -webkit-tap-highlight-color: transparent; transition: background-color .18s; }
+@media (hover: hover) { .kj:hover { background: hsl(var(--acc-h) 70% 52% / .13); } }
+.jp-nostroke .kj { cursor: inherit; } @media (hover: hover) { .jp-nostroke .kj:hover { background: none; } }
+.jp-sk-wrap { position: fixed; inset: 0; z-index: 90; display: flex; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box; animation: jp-fade .2s ease-out; }
+@keyframes jp-fade { from { opacity: 0; } to { opacity: 1; } }
+.jp-sk-scrim { position: absolute; inset: 0; background: rgba(0,0,0,.38); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+.jp-sk { position: relative; width: min(100%, 360px); box-sizing: border-box; padding: 12px 14px 14px; border-radius: 28px; background: var(--bg); color: var(--ink); box-shadow: var(--shadow), var(--g-bar);
+         font-family: var(--ui-font); animation: jp-pop .38s var(--spring); }
+@keyframes jp-pop { from { transform: scale(.88); opacity: 0; } to { transform: none; opacity: 1; } }
+.jp-skt { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.jp-skcs { flex: 1; display: flex; flex-wrap: nowrap; gap: 6px; min-width: 0; padding: 4px 2px 8px; margin: -4px 0 -8px; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scroll-snap-type: x proximity;
+          scrollbar-width: none; -webkit-overflow-scrolling: touch; touch-action: pan-x;
+          -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 10px, #000 calc(100% - 14px), transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 10px, #000 calc(100% - 14px), transparent 100%); }
+.jp-skcs::-webkit-scrollbar { display: none; }
+.jp-skc { flex: none; scroll-snap-align: center; width: 42px; height: 42px; padding: 0; border: 0; border-radius: 999px; cursor: pointer; font-family: var(--jp-font); font-size: 20px; color: var(--ink); background: var(--tint); box-shadow: var(--g-bar); -webkit-tap-highlight-color: transparent; transition: background-color .25s, transform .3s var(--spring); }
+.jp-skc.on { background: hsl(var(--acc-h) 70% 52% / .28); font-weight: 600; }
+.jp-skc:active { transform: scale(.92); }
+.jp-root .jp-skc:hover, .jp-root .jp-skc:focus { background: var(--tint) !important; box-shadow: var(--g-bar) !important; color: var(--ink) !important; outline: none; }
+.jp-root .jp-skc.on, .jp-root .jp-skc.on:hover, .jp-root .jp-skc.on:focus { background: hsl(var(--acc-h) 70% 52% / .28) !important; }
+.jp-sks { position: relative; width: 100%; aspect-ratio: 1; max-width: 320px; margin: 0 auto; border-radius: 22px; background: var(--chip-bg); cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.jp-svg { width: 100%; height: 100%; display: block; }
+.jp-svg path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.jp-sk-grid { stroke: var(--line); stroke-width: .8; stroke-dasharray: 3 3; }
+.jp-sk-ghost path { stroke: var(--ink); stroke-width: 3.4; opacity: .12; }
+.jp-sk-live path { stroke: var(--ink); stroke-width: 3.6; }
+.jp-sk-live path.cur { stroke: var(--accent); }
+.jp-sk-nums text { font-family: var(--ui-font); font-size: 6.4px; font-weight: 700; fill: var(--accent); opacity: 0; transition: opacity .3s; }
+.jp-sk-nums text.on { opacity: .95; }
+.jp-skm { padding: 20px; text-align: center; color: var(--muted); font-size: 14px; }
+.jp-skb { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; min-height: 46px; }
+.jp-ski { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+.jp-skr { min-height: 42px; padding: 6px 20px; }
+@media (prefers-reduced-motion: reduce) { .jp-sk, .jp-sk-wrap { animation: none; } .jp-sk-live path { transition: none !important; } }
+
+/* ====== Kanji-Infos im Popup ====== */
+.jp-sk { max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.jp-sks { max-width: min(320px, 38vh); }
+.jp-ki { text-align: left; margin-top: 10px; padding: 8px 14px; border-radius: 18px; background: var(--chip-bg); font-size: 14px; line-height: 1.45; }
+.jp-ki[hidden] { display: none !important; }
+.jp-kr { display: flex; gap: 10px; align-items: baseline; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.jp-kr:last-of-type { border-bottom: 0; }
+.jp-kl { flex: none; width: 6.4em; white-space: nowrap; color: var(--muted); font-size: .72em; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.jp-kv { min-width: 0; overflow-wrap: anywhere; }
+.jp-kc { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.jp-kchip { display: inline-block; padding: 1px 10px; border-radius: 999px; font-family: var(--jp-font); font-size: 15px; background: var(--tint); box-shadow: var(--g-pill); }
+.jp-kchip i { font-style: normal; color: var(--muted); }
+.jp-kchip.on { background: hsl(var(--acc-h) 70% 52% / .2); }
+.jp-kchip.rad { font-size: 20px; padding: 0 10px; background: hsl(var(--acc-h) 70% 52% / .2); }
+.jp-kchip.part { font-size: 17px; }
+.jp-krn { color: var(--ink); }
+.jp-kmeta { padding-top: 6px; color: var(--muted); font-size: .85em; border-top: 1px solid var(--line); }
+.jp-kn { color: var(--muted); text-align: center; padding: 8px 0; }
+.jp-ki .jp-fb { font-size: .68em; }
+
+.jp-sks.empty { aspect-ratio: auto; max-width: none; min-height: 0; padding: 6px 0; }
+.jp-skb[hidden] { display: none !important; }
+
+/* ====== Rōmaji-Modus (statt Furigana, auch über Kana) ====== */
+.jp-romaji ruby rt { font-family: var(--ui-font); letter-spacing: 0; text-transform: none; font-size: .3em; font-weight: 500; }
+.jp-romaji ruby.rk rt { opacity: .8; }
+.jp-romaji .jp { line-height: 2; }
+
+/* --- Schreibübung im Popup --- */
+.jp-skmode { width: 100%; box-sizing: border-box; grid-template-columns: repeat(var(--n), 1fr); margin: 0 0 10px; }
+.jp-skmode::after { left: calc(4px + var(--i) * (100% - 8px) / var(--n)); right: calc(4px + (var(--n) - 1 - var(--i)) * (100% - 8px) / var(--n)); }
+.jp-skmode .jp-o { height: 34px; font-size: 13px; padding: 0 2px; min-width: 0; }
+.jp-sks.prac { cursor: crosshair; }
+.jp-sks.prac .jp-svg { touch-action: none; -webkit-user-select: none; user-select: none; }
+.jp-svg path.u { stroke: var(--ink); stroke-width: 3.4; opacity: .85; }
+.jp-svg path.u.bad { stroke: #e5484d; animation: jp-bad .46s ease-out forwards; }
+@keyframes jp-bad { 0% { opacity: .95; } 100% { opacity: 0; } }
+.jp-sk-ghost.ref path { stroke: var(--accent); opacity: .42; }
+.jp-svg path.jp-sk-hint { stroke: var(--accent); stroke-width: 3.8; stroke-dasharray: 1 2; stroke-dashoffset: 1; animation: jp-hint 1.3s ease-in-out forwards; }
+@keyframes jp-hint { 0% { stroke-dashoffset: 1; opacity: 1; } 70% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+.jp-skbw { display: flex; gap: 8px; align-items: center; }
+.jp-sku { min-height: 42px; padding: 6px 16px; }
+.jp-sk-user { pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .jp-svg path.jp-sk-hint, .jp-svg path.u.bad { animation-duration: .01s !important; } }
+.jp-skmode[hidden] { display: none !important; }
+
+/* abhängige Optionen: ausgegraut, nicht bedienbar */
+.jp-row.dis { opacity: .4; }
+.jp-row.dis .jp-tog { cursor: not-allowed; pointer-events: none; }
+.jp-row { transition: opacity .25s; }
+
+/* --- Wörter mit diesem Kanji (Popup) --- */
+.jp-kw { margin-top: 10px; padding: 12px 14px 10px; border-radius: 18px; background: var(--chip-bg); }
+.jp-kw[hidden] { display: none !important; }
+.jp-kwh { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px; }
+.jp-kwh b { font-family: var(--jp-font); font-size: 16px; color: var(--accent); letter-spacing: 0; text-transform: none; }
+.jp-kwn { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.jp-kwg { padding: 8px 0 4px; border-top: 1px solid var(--line); }
+.jp-kwg:first-of-type { border-top: 0; }
+.jp-kwr { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.jp-kwl { display: flex; flex-direction: column; }
+.jp-kww { display: grid; grid-template-columns: auto minmax(5.5em, 1fr) auto; column-gap: 8px; align-items: baseline; padding: 3px 0; font-size: 14px; }
+.jp-kww.x { display: none; } .jp-kwg.open .jp-kww.x { display: grid; }
+.jp-kwe { font-family: var(--jp-font); font-size: 17px; color: var(--ink); grid-row: 1; }
+.jp-kwe em { font-style: normal; color: var(--accent); font-weight: 600; }
+.jp-kwk { grid-column: 2; font-family: var(--jp-font); font-size: 12px; color: var(--muted); }
+.jp-kwm { grid-column: 1 / -1; color: var(--ink); opacity: .86; font-size: 13px; }
+.jp-kwc { grid-row: 1; grid-column: 3; font-size: 10px; color: var(--muted); background: var(--tint); border-radius: 999px; padding: 1px 7px; box-shadow: var(--g-bar); }
+.jp-kww.cur { background: color-mix(in srgb, var(--accent) 13%, transparent); border-radius: 10px; margin: 0 -8px; padding: 4px 8px; }
+.jp-kwb { margin: 2px 0 0; padding: 2px 8px; border: 0; background: none; color: var(--accent); font-size: 12px; cursor: pointer; font-family: var(--ui-font); }
+.jp-root .jp-kwb:hover, .jp-root .jp-kwb:focus { background: none !important; box-shadow: none !important; color: var(--accent) !important; outline: none; }
+@media (hover: hover) { .jp-root .jp-kwb:hover { text-decoration: underline; } }
+.jp-kw, .jp-kww, .jp-kwm, .jp-kwk { text-align: left; }
+.jp-kww { justify-items: start; }
+.jp-kwk { padding-left: 2px; }
+.jp-kwc { justify-self: end; }
+.jp-kwm { padding-top: 1px; }
+
+/* --- Tastenkürzel-Hinweise (nur mit Maus/Tastatur-Geräten) --- */
+.jp-kb { display: inline-block; min-width: 1.5em; padding: 1px 6px; margin: 0 1px; border-radius: 7px; font: 600 11px/1.5 var(--ui-font); letter-spacing: 0; text-align: center; color: var(--muted); background: var(--tint); box-shadow: var(--g-bar); vertical-align: middle; }
+.btn .jp-kb { margin-left: 4px; }
+
+/* --- Anleitungskarte --- */
+.guide { text-align: left; font-family: var(--ui-font); font-size: 15px; line-height: 1.6; color: var(--ink); padding: 56px 0 40px; }
+.guide[hidden] { display: none; }
+.guide h1 { font-family: var(--de-font, var(--ui-font)); font-size: 30px; font-weight: 600; margin: 0 0 8px; letter-spacing: -.01em; }
+.guide h2 { font-size: 12px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); margin: 30px 0 8px; padding-top: 16px; border-top: 1px solid var(--line); }
+.guide p { margin: 8px 0; } .g-lead { color: var(--muted); }
+.guide ul { margin: 6px 0; padding-left: 20px; } .guide li { margin: 5px 0; }
+.guide code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 6px; border-radius: 6px; background: var(--chip-bg); }
+.g-t { width: 100%; border-collapse: collapse; margin: 6px 0; }
+.g-t td { padding: 8px 10px 8px 0; border-top: 1px solid var(--line); vertical-align: top; text-align: left; }
+.g-t tr:first-child td { border-top: 0; }
+.g-t td:first-child { white-space: nowrap; width: 1%; padding-right: 18px; font-weight: 600; color: var(--accent); }
+
+.guide a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; word-break: break-all; }
+
+/* --- Touch (iPhone/Android): kein Hover-Zustand, schnelle Taps, Popup als scrollbare Ebene --- */
+button, label, .kj, .jp-o, .jp-skc, .jp-tog { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.jp-sk-wrap { flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+              padding: calc(16px + env(safe-area-inset-top, 0px)) 16px 16px; }
+.jp-sk-wrap::after { content: ''; flex: none; height: calc(120px + env(safe-area-inset-bottom, 0px)); }
+.jp-sk-scrim { position: fixed; }
+.jp-sk { max-height: none; overflow: visible; margin: auto 0; flex: none; }
+
+/* iOS feuert click nur auf Elementen mit cursor:pointer -> Außen-Tipp schließt Einstellungen/Popup */
+.jp-scrim, .jp-sk-scrim, .jp-sk-wrap { cursor: pointer; }
+.jp-sk, .jp-panel { cursor: auto; }
+
+/* Glas-Optik immer (nicht erst bei Hover): Anki-Standardstil für <button> darf sie im Ruhezustand nicht überschreiben */
+.jp-root .btn, .jp-root .jp-reset, .jp-root .jp-gear, .jp-root .jp-tog, .jp-root .jp-skc:not(.on) { background: var(--tint) !important; }
+.jp-root .jp-x { background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,0)), var(--tint) !important; }
+.jp-root .btn, .jp-root .jp-reset, .jp-root .jp-x, .jp-root .jp-tog, .jp-root .jp-skc { box-shadow: var(--g-bar) !important; }
+.jp-root .jp-gear { box-shadow: var(--g-pill) !important; }
+.jp-root .jp-skc.on { background: hsl(var(--acc-h) 70% 52% / .28) !important; }
+.jp-root .btn, .jp-root .jp-reset, .jp-root .jp-skc, .jp-root .jp-tog, .jp-root .jp-x, .jp-root .jp-gear { border: 0 !important; }
+
+
+/* Handy: AnkiMobile legt unten eine Leiste (Zähler/Antwort) über die Karte -> Platz lassen */
+@media (pointer: coarse) {
+  .jp-pb { padding-bottom: calc(max(18px, env(safe-area-inset-bottom, 0px)) + 150px); }
+  .jp-sk-wrap::after { height: calc(180px + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* Nur solange Einstellungen/Popup offen sind: volle Höhe (AnkiMobile passt die Webview sonst an den kurzen Karteninhalt an) */
+body.jp-ovl, body.jp-ovl.card { min-height: 100vh; }
+
+/* 書-Stempel: Wörter aus den Kanji-Lektionen (Recall-Vorderseite oben links und in der Wortliste) */
+.jp-wr { position: fixed; top: 8px; left: 10px; z-index: 5; width: 42px; height: 42px; color: var(--accent); opacity: .92; pointer-events: none; user-select: none; -webkit-user-select: none; }
+.jp-wr svg, .jp-kwp svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.jp-kww.wr { position: relative; isolation: isolate; }
+.jp-kwp { position: absolute; z-index: -1; top: 2px; right: 52px; width: 44px; height: 44px; color: var(--accent); opacity: .16; pointer-events: none; }   /* Wasserzeichen: Höhe der ersten zwei Zeilen, wächst nicht mit */
+.jp-kww.wr.cur .jp-kwp { top: 3px; right: 60px; }
+.jp-nowr .jp-kwp { display: none; }
+
+/* ====== Wort schreiben (Recall): Laufband + großes Feld ====== */
+.jp-wpo-open { margin-top: 18px; }
+.jp-wpbtn { color: var(--accent); }
+.jp-wp-wrap { position: fixed; inset: 0; z-index: 95; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 12px; box-sizing: border-box; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+              background: rgba(20,18,15,.38); animation: jp-fade .2s ease-out; cursor: pointer; }
+.jp-wp { position: relative; width: min(100%, 420px); box-sizing: border-box; margin: auto 0; flex: none; padding: 12px 14px 14px; border-radius: 28px; background: var(--bg); color: var(--ink); box-shadow: var(--shadow), var(--g-bar); cursor: auto; font-family: var(--ui-font); text-align: left; }
+.jp-wph { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.jp-wpht { flex: 1; min-width: 0; padding: 2px 4px 0; }
+.jp-wpl { display: block; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+.jp-wpht b { display: block; font-size: 16px; font-weight: 600; line-height: 1.3; }
+.jp-wps { display: flex; gap: 6px; overflow-x: auto; overflow-y: hidden; padding: 4px 2px 8px; margin: 0 -2px 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.jp-wps::-webkit-scrollbar { display: none; }
+.jp-wpm { position: relative; flex: none; width: 42px; height: 42px; box-sizing: border-box; border: 0; border-radius: 13px; display: flex; align-items: center; justify-content: center; font: 20px/1 var(--jp-font); color: var(--muted); background: var(--tint); box-shadow: var(--g-bar); }
+.jp-wpm svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.jp-wpm path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.jp-wpm path.u { stroke: var(--ink); stroke-width: 6; }
+.jp-wpm path.s { stroke: var(--accent); stroke-width: 6; }
+.jp-wpm.go { cursor: pointer; }
+.jp-wpm.on { }
+.jp-wpm.sk { width: 22px; background: none; box-shadow: none; }
+.jp-wpm.sp { width: 10px; background: none; box-shadow: none; }
+.jp-wpm.gv { opacity: .6; }
+.jp-wpm.sol { color: var(--accent); opacity: 1; }
+.jp-wpfh { position: relative; width: min(100%, max(220px, calc(100vh - 390px))); aspect-ratio: 1; margin: 2px auto 0; border-radius: 22px; overflow: hidden; }
+.jp-wpf { position: absolute; inset: 0; border: 0; border-radius: 22px; background: var(--chip-bg); touch-action: none; transition: box-shadow .2s; }
+.jp-wpf.gone { pointer-events: none; }
+@keyframes jp-wpinr { from { transform: translateX(100%); } to { transform: none; } }
+@keyframes jp-wpinl { from { transform: translateX(-100%); } to { transform: none; } }
+@keyframes jp-wpoutl { from { transform: none; } to { transform: translateX(-100%); } }
+@keyframes jp-wpoutr { from { transform: none; } to { transform: translateX(100%); } }
+.jp-wps { position: relative; }
+.jp-wpind { position: absolute; left: 0; z-index: 2; box-sizing: border-box; border-radius: 13px; pointer-events: none; background: hsl(var(--acc-h) 70% 52% / .2); box-shadow: 0 0 0 2px var(--accent); }
+.jp-wpv { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; -webkit-user-select: none; user-select: none; }
+.jp-wpv path.u { fill: none; stroke: var(--ink); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.jp-wpt path { fill: none; stroke: var(--muted); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.jp-wpt.on path { opacity: .28; } .jp-wpt.on path.nx { stroke: var(--accent); opacity: .45; }
+.jp-wpv path.u.ok { stroke-dasharray: 1 2; animation: jp-wpsnap .22s ease-out forwards; }
+@keyframes jp-wpsnap { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.jp-wpf.fin { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent); }
+.jp-wpv.anim { cursor: pointer; }
+.jp-wpmode { margin: 0 0 8px; }
+.jp-wpm .jp-wpms { position: absolute; right: -5px; top: -5px; min-width: 15px; height: 15px; padding: 0 3px; box-sizing: border-box; border-radius: 999px; background: #e5484d; color: #fff; font: 600 9.5px/15px var(--ui-font); font-style: normal; text-align: center; }
+.jp-wptx { font: 80px var(--jp-font); fill: var(--muted); opacity: .25; text-anchor: middle; dominant-baseline: middle; }
+.jp-wpbar { display: flex; gap: 8px; margin-top: 12px; }
+.jp-wpbar .btn { flex: 1 1 0; min-width: 0; padding: 8px 6px; font-size: 14px; white-space: nowrap; }
+.jp-wpbar .btn.ic { flex: 0 0 46px; font-size: 20px; }
+.jp-wpbar .btn:disabled { opacity: .35; }
+.jp-root .jp-wpbar .btn.on, .jp-wpbar .btn.on { color: var(--accent) !important; background: color-mix(in srgb, var(--accent) 16%, transparent) !important; }
+.jp-root .jp-wpbar .btn.pri, .jp-wpbar .btn.pri { color: #fff !important; background: var(--accent) !important; }
+.jp-wpo { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
+.btn.jp-wpq { min-height: 34px; min-width: 0; padding: 4px 14px; font-size: 12.5px; color: var(--muted); }
+.jp-root .btn.jp-wpq:hover, .jp-root .btn.jp-wpq:focus { color: var(--muted) !important; outline: none; }
+.jp-root .btn.jp-wpq.on, .jp-root .btn.jp-wpq.on:hover, .jp-root .btn.jp-wpq.on:focus { color: var(--accent) !important; }
+.jp-root .jp-wpbar .btn.pri:hover, .jp-root .jp-wpbar .btn.pri:focus, .jp-root .jp-wpbar .btn.pri:active { background: var(--accent) !important; color: #fff !important; }
+.jp-wpq::before { content: '○ '; } .jp-wpq.on { color: var(--accent); } .jp-wpq.on::before { content: '● '; }
+.jp-wpk { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 8px 2px 6px; }
+.jp-wpr { display: flex; flex-wrap: wrap; gap: 6px; }
+@media (pointer: coarse) { .jp-wp-wrap::after { content: ''; display: block; flex: none; height: 120px; } }
+.jp-wpr.big .jp-wpm { width: 72px; height: 72px; font-size: 34px; border-radius: 14px; } .jp-wpr.big .jp-wpm.sk { width: 30px; } .jp-wpr.big .jp-wpm path.u, .jp-wpr.big .jp-wpm path.s { stroke-width: 4.5; }
+.jp-wpt.ref path { stroke: var(--accent); stroke-width: 6.5; opacity: .3; }
+.jp-wpm path.r { stroke: var(--accent); stroke-width: 6; opacity: .35; }
+.btn.jp-wpq:disabled { opacity: .4; cursor: default; }
+.jp-root .btn.jp-wpq:disabled:hover { color: var(--muted) !important; }
+.jp-sk-ghost path.nx { stroke: var(--accent); opacity: .45; }
+.jp-wpq.hl::before { content: '? '; font-weight: 700; }
+.jp-wpm.xt { box-shadow: var(--g-bar), inset 0 0 0 1.5px rgba(229,72,77,.65); }
+
+/* ====== Radikal-Karte (Antippen des Radikals im Kanji-Popup) ====== */
+.jp-kchip.rad.go { -webkit-appearance: none; appearance: none; border: 0; font: inherit; font-family: var(--jp-font); font-size: 15px; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.jp-root .jp-kchip.rad.go:hover, .jp-root .jp-kchip.rad.go:focus { outline: none; }
+.jp-kchip.rad.go.on { box-shadow: var(--g-pill), 0 0 0 2px var(--accent); }
+.jp-krj { font-family: var(--jp-font); color: var(--accent); }
+.jp-rdc { margin: 6px 0 8px; padding: 12px 14px; border-radius: 18px; background: var(--tint); box-shadow: var(--g-bar); font-family: var(--ui-font); text-align: left; animation: jp-fade .2s ease-out; }
+.jp-rdt { display: flex; gap: 14px; align-items: center; }
+.jp-rdg { flex: none; font: 44px/1 var(--jp-font); color: var(--accent); min-width: 48px; text-align: center; }
+.jp-rdi { min-width: 0; }
+.jp-rdn { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.jp-rdk { font: 600 18px var(--jp-font); color: var(--ink); }
+.jp-rdr { font-size: 12px; color: var(--muted); }
+.jp-rdm { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.jp-rdp { font-size: 12.5px; margin-top: 4px; color: var(--ink); }
+.jp-rdp b { font-family: var(--jp-font); font-weight: 600; }
+.jp-rdpi svg { width: 16px; height: 16px; vertical-align: -3px; margin-right: 5px; }
+.jp-rdv { font-family: var(--jp-font); }
+.jp-rdh { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 10px 0 6px; }
+.jp-rdw { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.jp-rdx { -webkit-appearance: none; appearance: none; border: 0; font: 17px/1.3 var(--jp-font); color: var(--ink); padding: 2px 9px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.jp-rdx.on { background: hsl(var(--acc-h) 70% 52% / .28); }
+.jp-rdx.x { display: none; } .jp-rdw.open .jp-rdx.x { display: inline-block; }
+.jp-root .jp-rdx:hover, .jp-root .jp-rdx:focus { outline: none; }
+.g-fig { margin: 14px auto 10px; max-width: 340px; text-align: center; }
+.g-fig img { display: block; width: 100%; height: auto; border-radius: 18px; box-shadow: 0 4px 18px rgba(0,0,0,.18); }
+.g-fig figcaption { margin-top: 8px; font-size: 13px; color: var(--muted); }
+.jp-root .jp-kchip.rad.go { font-size: 20px; padding: 0 10px; border: 0 !important; background: hsl(var(--acc-h) 70% 52% / .2) !important; box-shadow: var(--g-pill) !important; }
+.jp-root .jp-kchip.rad.go.on { box-shadow: var(--g-pill), 0 0 0 2px var(--accent) !important; }
+.jp-root .jp-rdx { border: 0 !important; background: var(--tint) !important; box-shadow: var(--g-pill) !important; }
+.jp-root .jp-rdx.on { background: hsl(var(--acc-h) 70% 52% / .28) !important; }
+.g-done { text-align: center; padding: 6px 0 48px; margin-top: -16px; }
+.g-done .btn:disabled { opacity: .55; cursor: default; }
+.g-dsub { font-family: var(--ui-font); font-size: 13px; line-height: 1.5; color: var(--muted); margin: 10px auto 0; max-width: 340px; }
+.g-dsub.warn { color: var(--ink); }
+:where(.jp-root) button { margin: 0; font-weight: inherit; }   /* Anki-Desktop: reviewer.css setzt button { margin: 1em .5em } */
+.jp-ski:empty::before { content: '\00a0'; }   /* Zeile „Strich x / y“ behält ihre Höhe → beim Neustart der Animation springt nichts */
+.g-n { display: inline-block; min-width: 19px; height: 19px; line-height: 19px; border-radius: 50%; background: var(--k); color: #fff; font-size: 11.5px; font-weight: 700; text-align: center; margin-right: 6px; vertical-align: 1px; }
+.g-u { text-decoration: underline; text-decoration-color: var(--k); text-decoration-thickness: 3px; text-underline-offset: 4px; text-decoration-skip-ink: none; }
+.guide li > ul { margin-top: 4px; }
+.g-fig.g-cut img { -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 90px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 90px), transparent); box-shadow: none; }
+/* Gestapelte Popups: immer nur ein Fenster und eine Abdunklung sichtbar. Das untere Fenster blendet aus (bleibt mit
+   Scrollstand erhalten) und beim Schließen wieder ein; das obere hat keine eigene Abdunklung → nichts wird dunkler oder schärfer. */
+.jp-sk-wrap > .jp-sk { transition: opacity .18s ease; }
+.jp-sk-wrap.jp-under > .jp-sk { opacity: 0; visibility: hidden; transition: opacity .18s ease, visibility 0s linear .18s; }
+.jp-sk-wrap.jp-stack > .jp-sk-scrim { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.g-fig.g-wide { max-width: 460px; }
+/* Offenes Fenster (Einstellungen, Popup, Schreibfeld): Hintergrund lässt sich nicht scrollen */
+html.jp-ovl, html.jp-ovl body { overflow: hidden !important; overscroll-behavior: none; }
+.jp-scrim, .jp-sk-scrim { touch-action: none; }
+/* Großer Bildschirm: Einstellungen als Fenster in der Mitte statt als Leiste am unteren Rand */
+@media (min-width: 700px) and (min-height: 560px) {
+  .jp-panel { top: 0; bottom: 0; height: fit-content; max-height: 80vh; margin: auto; border-radius: 26px; }
+}
+/* Anleitung: Einstellungen kommen von oben (die Karte ist lang, unten/Mitte wäre weit weg) */
+.jp-root[data-mode="guide"] .jp-panel { top: max(12px, env(safe-area-inset-top, 0px)); bottom: auto; height: auto; margin: 0 auto; max-height: 80vh; border-radius: 26px; }
+.jp-root[data-mode="guide"].jp-open .jp-panel { animation: jp-down .28s cubic-bezier(.2,.8,.2,1); }
+@keyframes jp-down { from { transform: translateY(-24px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .jp-root[data-mode="guide"].jp-open .jp-panel { animation: none; } }
+
+/* ===== Fix 1 (v2): offenes Fenster -> keine backdrop-filter-Ebene mehr; Hintergrund wird einmalig statisch weichgezeichnet ===== */
+html.jp-ovl *, html.jp-ovl *::before, html.jp-ovl *::after {
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+}
+html.jp-ovl .jp-root .wrap > :not(.jp-wr) {
+  -webkit-filter: blur(3px); filter: blur(3px);
+}
+
+/* ===== Fix 2: Kanji-Rahmen nur ums Zeichen, nicht über Furigana/darunter ===== */
+.kj { position: relative; }
+.kj:hover { background: none; }
+.kj::before {
+  content: ''; position: absolute; left: -.04em; right: -.04em;
+  top: 50%; height: 1.15em; transform: translateY(-50%);
+  border-radius: .22em; pointer-events: none;
+  background: hsl(var(--acc-h) 70% 52% / .13);
+  opacity: 0; transition: opacity .18s;
+}
+.kj:hover::before { opacity: 1; }
+.jp-nostroke .kj:hover::before { opacity: 0; }
+
+/* ===== Fix 3: Standardbreite (Automatik): Fenster/PC 90 %, Handy voll; gilt auch fuer die Anleitung ===== */
+.wrap { max-width: var(--jp-wmax, max(90%, min(100%, 30rem))); }
+/* Anleitung D */
+.guide .note { margin: 12px 0; padding: 10px 14px; border-radius: 14px; font-size: 14px; background: var(--chip-bg); box-shadow: inset 3px 0 0 var(--accent); }
+@supports (background: color-mix(in srgb, red 10%, transparent)) { .guide .note { background: color-mix(in srgb, var(--accent) 12%, transparent); } }
+.guide p.lead { color: var(--muted); margin: 0 0 14px; }
+.guide .quick { margin: 18px 0 6px; padding: 14px 18px 10px; border-radius: 20px; background: var(--chip-bg); box-shadow: inset 0 0 0 1px var(--line); }
+.guide .quick h2 { color: var(--accent); margin: 0 0 4px; padding: 0; border: 0; }
+.guide .quick-list { padding-left: 18px; }
+.guide .actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 4px; }
+.guide .btn.pri { display: inline-flex; align-items: center; color: var(--bg); background: var(--accent); text-decoration: none; }
+.jp-root .guide .btn.pri, .jp-root .guide .btn.pri:hover, .jp-root .guide .btn.pri:focus, .jp-root .guide .btn.pri:active { color: #fff !important; background: var(--accent) !important; }
+.guide .tier { margin: 26px 0 8px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.guide .tier b { font-size: 12px; letter-spacing: .09em; text-transform: uppercase; color: var(--accent); }
+.guide .tier span { color: var(--muted); font-size: 13px; }
+.guide a.x { text-decoration: none; border-bottom: 1px dotted var(--accent); word-break: normal; }
+.guide details { margin: 8px 0; border-radius: 18px; background: var(--chip-bg); box-shadow: inset 0 0 0 1px var(--line); }
+.guide summary { list-style: none; cursor: pointer; padding: 12px 16px; -webkit-tap-highlight-color: transparent; }
+.guide summary::-webkit-details-marker { display: none; }
+.guide summary .sm { display: flex; align-items: center; gap: 12px; }
+.guide summary .sp { flex: 1; min-width: 0; }
+.guide summary .tt { font-weight: 600; font-size: 16px; }
+.guide summary .te { color: var(--muted); font-size: 13px; display: block; line-height: 1.35; }
+.guide .gl { flex: none; width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; font-family: var(--jp-font); font-size: 22px; color: var(--accent); background: var(--tint); box-shadow: var(--g-bar); }
+.guide .chev { width: 18px; height: 18px; flex: none; transition: transform .2s; color: var(--muted); }
+.guide details[open] > summary .chev { transform: rotate(180deg); }
+.guide details[open] > summary { border-bottom: 1px solid var(--line); }
+.guide .dbody { padding: 6px 18px 16px; }
+/* Panel deckend + Android-Highlight */
+.jp-panel { background: var(--bg) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+/* Android: kein blaues Aufleuchten der ganzen Karte (Tap-Markierung der Overlays, Textauswahl bei schnellen Taps auf Knöpfe) */
+.jp-root, .jp-root *, .jp-sk-wrap, .jp-sk-wrap *, .jp-wp-wrap, .jp-wp-wrap *, .jp-panel, .jp-panel *, .jp-scrim, .jp-sk-scrim { -webkit-tap-highlight-color: transparent; }
+.jp-root button, .jp-sk-wrap button, .jp-wp-wrap button, .jp-panel button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }

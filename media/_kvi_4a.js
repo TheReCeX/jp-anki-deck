@@ -1,0 +1,2 @@
+/* KANJIDIC2 (c) EDRDG, CC BY-SA 4.0 - https://www.edrdg.org/wiki/index.php/KANJIDIC_Project ; Bestandteile aus KanjiVG (CC BY-SA 3.0) */
+(function(d){var K=window.KVI=window.KVI||{};for(var k in d)K[k]=d[k];})({"䨄":[19,0,0,172,[],[],["quail"],[]],"䨩":[18,0,0,173,[],[],["the spirit","the soul","divine","super-natural"],[]],"䪼":[14,0,0,181,[],[],["the cheek-bone","the malar bone","the malar"],[]]});

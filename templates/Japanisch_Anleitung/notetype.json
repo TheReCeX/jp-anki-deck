@@ -1,0 +1,58 @@
+{
+  "id": 1792481769421,
+  "name": "Japanisch Anleitung",
+  "sortf": 0,
+  "type": 0,
+  "css": "../style.css",
+  "fields": [
+    {
+      "name": "Titel",
+      "sticky": false,
+      "rtl": false,
+      "font": "Arial",
+      "size": 20,
+      "description": "",
+      "plainText": false,
+      "collapsed": false,
+      "excludeFromSearch": false,
+      "id": 650521056171125813,
+      "preventDeletion": false
+    },
+    {
+      "name": "Anleitung DE",
+      "sticky": false,
+      "rtl": false,
+      "font": "Arial",
+      "size": 20,
+      "description": "",
+      "plainText": false,
+      "collapsed": false,
+      "excludeFromSearch": false,
+      "id": -8052881963862320083,
+      "preventDeletion": false
+    },
+    {
+      "name": "Guide EN",
+      "sticky": false,
+      "rtl": false,
+      "font": "Arial",
+      "size": 20,
+      "description": "",
+      "plainText": false,
+      "collapsed": false,
+      "excludeFromSearch": false,
+      "id": -1111551070279092512,
+      "preventDeletion": false
+    }
+  ],
+  "templates": [
+    {
+      "name": "Anleitung",
+      "file": "Anleitung",
+      "id": 1897227242907151506
+    }
+  ],
+  "latexPre": "\\documentclass[12pt]{article}\n\\special{papersize=3in,5in}\n\\usepackage[utf8]{inputenc}\n\\usepackage{amssymb,amsmath}\n\\pagestyle{empty}\n\\setlength{\\parindent}{0in}\n\\begin{document}\n",
+  "latexPost": "\\end{document}",
+  "originalStockKind": 1
+}

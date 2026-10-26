@@ -1,0 +1,2 @@
+/* KANJIDIC2 (c) EDRDG, CC BY-SA 4.0 - https://www.edrdg.org/wiki/index.php/KANJIDIC_Project ; Bestandteile aus KanjiVG (CC BY-SA 3.0) */
+(function(d){var K=window.KVI=window.KVI||{};for(var k in d)K[k]=d[k];})({"䠖":[16,0,0,157,[],[],[],[]],"䡄":[9,0,0,159,[],[],[],[]],"䡎":[11,0,0,159,[],[],["a windlass","a pulley","a capstan"],[]],"䢵":[11,0,0,163,[],[],["name of an old country in today's Hubei province","name of a place in today's Jiangsu province"],[]]});

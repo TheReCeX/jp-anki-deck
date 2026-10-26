@@ -1,0 +1,2 @@
+/* KANJIDIC2 (c) EDRDG, CC BY-SA 4.0: Bedeutungen ins Deutsche übertragen; Radikal-Form/Position aus KanjiVG (CC BY-SA 3.0), Lücken aus BabelStone IDS (Andrew West); JLPT-Stufen inoffiziell nach Jonathan Waller (tanos.co.uk, CC BY) */
+(function(d){var K=window.KVX=window.KVX||{};for(var k in d)K[k]=d[k];})({"䨄":[["Wachtel"],"隹","r",0,"酓隹"],"䨩":[["Geist","Seele","göttlich","übernatürlich"],"雨","t",0,"雨示申"],"䪼":[["Wangenknochen","Jochbein"],"頁","r",0,"出頁"]});

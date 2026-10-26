@@ -1,0 +1,2 @@
+/* KANJIDIC2 (c) EDRDG, CC BY-SA 4.0 - https://www.edrdg.org/wiki/index.php/KANJIDIC_Project ; Bestandteile aus KanjiVG (CC BY-SA 3.0) */
+(function(d){var K=window.KVI=window.KVI||{};for(var k in d)K[k]=d[k];})({"䜌":[19,0,0,149,[],[],["chaos","distraction","confusion","confused","continuous","uninterruptedto tie together","to manage"],[]],"䝤":[19,0,0,153,[],[],["a primitive tribe in southwest China","nocturnal hunting"],[]],"䟽":[14,0,0,157,[],[],["scattered or dispersed"],[]]});

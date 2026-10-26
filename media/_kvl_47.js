@@ -1,0 +1,2 @@
+/* KANJIDIC2 (c) EDRDG, CC BY-SA 4.0: Bedeutungen ins Deutsche übertragen; Radikal-Form/Position aus KanjiVG (CC BY-SA 3.0), Lücken aus BabelStone IDS (Andrew West); JLPT-Stufen inoffiziell nach Jonathan Waller (tanos.co.uk, CC BY) */
+(function(d){var K=window.KVX=window.KVX||{};for(var k in d)K[k]=d[k];})({"䜌":[["Chaos","Zerstreuung","Verwirrung","verwirrt","fortlaufend","ununterbrochen, zusammenbinden","verwalten"],"言","",0,"糸言"],"䝤":[["primitiver Volksstamm in Südwestchina","nächtliche Jagd"],"豸","l",0,"豸尞"],"䟽":[["verstreut oder zerstreut"],"",""]});

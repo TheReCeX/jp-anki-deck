@@ -1,0 +1,96 @@
+{
+  "id": 1342696646292,
+  "name": "Japanese",
+  "sortf": 0,
+  "type": 0,
+  "css": "../style.css",
+  "fields": [
+    {
+      "name": "Expression",
+      "sticky": false,
+      "rtl": false,
+      "font": "Mincho",
+      "size": 12,
+      "description": "",
+      "plainText": false,
+      "collapsed": false,
+      "excludeFromSearch": false,
+      "preventDeletion": false
+    },
+    {
+      "name": "Bedeutung",
+      "sticky": false,
+      "rtl": false,
+      "font": "Arial",
+      "size": 12,
+      "description": "",
+      "plainText": false,
+      "collapsed": false,
+      "excludeFromSearch": false,
+      "preventDeletion": false
+    },
+    {
+      "name": "Meaning",
+      "sticky": false,
+      "rtl": false,
+      "font": "Arial",
+      "size": 12,
+      "description": "",
+      "plainText": false,
+      "collapsed": false,
+      "excludeFromSearch": false,
+      "preventDeletion": false
+    },
+    {
+      "name": "Reading",
+      "sticky": false,
+      "rtl": false,
+      "font": "Arial",
+      "size": 12,
+      "description": "",
+      "plainText": false,
+      "collapsed": false,
+      "excludeFromSearch": false,
+      "preventDeletion": false
+    },
+    {
+      "name": "する-Verb Bedeutung",
+      "sticky": false,
+      "rtl": false,
+      "font": "Arial",
+      "size": 20,
+      "description": "",
+      "plainText": false,
+      "collapsed": false,
+      "excludeFromSearch": false,
+      "id": -4422446325233819901,
+      "preventDeletion": false
+    },
+    {
+      "name": "する-Verb Meaning",
+      "sticky": false,
+      "rtl": false,
+      "font": "Arial",
+      "size": 20,
+      "description": "",
+      "plainText": false,
+      "collapsed": false,
+      "excludeFromSearch": false,
+      "id": -4422446325233819901,
+      "preventDeletion": false
+    }
+  ],
+  "templates": [
+    {
+      "name": "Recognition",
+      "file": "Recognition"
+    },
+    {
+      "name": "Recall",
+      "file": "Recall"
+    }
+  ],
+  "latexPre": "\\documentclass[12pt]{article}\n\\special{papersize=3in,5in}\n\\usepackage{amssymb,amsmath}\n\\pagestyle{empty}\n\\setlength{\\parindent}{0in}\n\\begin{document}\n",
+  "latexPost": "\\end{document}",
+  "originalStockKind": 0
+}

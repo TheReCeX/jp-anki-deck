@@ -1,0 +1,1089 @@
+<div class="jp-root" id="jp-root" data-mode="rec">
+  <button type="button" class="jp-gear" id="jp-gear" aria-label="Einstellungen"><svg viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></button>
+  <div class="wrap">
+    <div class="jp q-only">
+      <span id="v-a">{{Expression}}{{#する-Verb Bedeutung}}<span class="suru-mark"> (する)</span>{{/する-Verb Bedeutung}}{{^する-Verb Bedeutung}}{{#する-Verb Meaning}}<span class="suru-mark"> (する)</span>{{/する-Verb Meaning}}{{/する-Verb Bedeutung}}</span><span id="v-b" style="display:none">{{furigana:Reading}}{{#する-Verb Bedeutung}}<span class="suru-mark"> (する)</span>{{/する-Verb Bedeutung}}{{^する-Verb Bedeutung}}{{#する-Verb Meaning}}<span class="suru-mark"> (する)</span>{{/する-Verb Meaning}}{{/する-Verb Bedeutung}}</span>
+    </div>
+    <div class="actions q-only"><button type="button" class="btn" id="tgl">Lesung zeigen</button></div>
+    <div class="ans">
+      <div class="jp">{{furigana:Reading}}{{#する-Verb Bedeutung}}<span class="suru-mark"> (する)</span>{{/する-Verb Bedeutung}}{{^する-Verb Bedeutung}}{{#する-Verb Meaning}}<span class="suru-mark"> (する)</span>{{/する-Verb Meaning}}{{/する-Verb Bedeutung}}</div>
+      <hr class="answer">
+      <div class="de" id="m-out"></div>
+      {{#する-Verb Bedeutung}}<div class="suru"><span class="lbl" id="suru-lbl">する-Verb</span><span id="s-out"></span></div>{{/する-Verb Bedeutung}}{{^する-Verb Bedeutung}}{{#する-Verb Meaning}}<div class="suru"><span class="lbl" id="suru-lbl">する-Verb</span><span id="s-out"></span></div>{{/する-Verb Meaning}}{{/する-Verb Bedeutung}}
+      <div class="chips" id="chips"></div>
+    </div>
+  </div>
+  <div hidden><div id="m-de">{{Bedeutung}}</div><div id="m-en">{{Meaning}}</div><div id="s-de">{{する-Verb Bedeutung}}</div><div id="s-en">{{する-Verb Meaning}}</div></div>
+  <div class="jp-scrim" id="jp-scrim"></div><div class="jp-panel" id="jp-panel" role="dialog" aria-label="Einstellungen"></div>
+</div>
+
+<script>
+(function () {
+  /* ===== Standardwerte: hier ändern (gilt für alle Geräte, wird mit Anki synchronisiert) ===== */
+  var D = {
+    lang: 'de',         /* Sprache der Karte: de | en */
+    theme: 'auto',      /* auto | light | dark */
+    accent: 6,          /* Farbton 0-360 (6 = Rot, 215 = Blau, 150 = Grün, 270 = Violett, 38 = Gold) */
+    jpScale: 100,       /* Größe Japanisch in % */
+    deScale: 100,       /* Größe der Übersetzung in % */
+    width: 0,           /* Anzeigebreite in % des Bildschirms (30-100); 0 = automatisch (Handy voll, PC schmaler Streifen) */
+    deFont: 'mincho',   /* mincho | sans */
+    align: 'center',    /* center | left */
+    romaji: false,      /* Rōmaji statt Furigana, auch über Kana (für Anfänger) */
+    furi: true,         /* Furigana über Kanji */
+    kanjiInfo: true,    /* im Popup: Bedeutung, Lesungen, Radikal, Bestandteile */
+    strokes: true,      /* Antippen eines Kanji zeigt die animierte Strichfolge */
+    chips: true,        /* Kapitel-Chips auf der Rückseite */
+    autoRead: false,    /* Recognition: Lesung gleich auf der Vorderseite zeigen */
+    autoStroke: false,  /* Recall: Rückseite direkt mit Strichfolge */
+    keys: true,         /* Tastenkürzel (Desktop) mit Hinweisen auf der Karte */
+    writeHint: true,    /* 書-Stempel oben links auf Recall-Karten bei Wörtern aus den Kanji-Lektionen (Genki Kanji, Tobira 漢字RW, Radikal漢字) */
+    writeList: true,    /* 書-Stempel (blass, im Hintergrund) bei diesen Wörtern in der Wortliste */
+    writePad: true,     /* Recall: Button „Wort schreiben“ (freies Schreibfeld fürs ganze Wort) */
+    wpAuto: true,       /* Schreibfeld: nach der richtigen Strichzahl automatisch zum nächsten Zeichen */
+    wpKana: false,      /* Schreibfeld: Kana vorgeben (nur Kanji schreiben) */
+    wpMode: 'blind',    /* Schreibfeld: anim | blind | snap | guide (wie im Popup) */
+    kanjiWords: true,   /* im Popup: Wörter aus dem Deck mit diesem Kanji, nach Lesung gruppiert */
+    skMode: 'anim'      /* Popup: anim | blind | snap | guide (zuletzt gewählter Übungsmodus) */
+  };
+  var KEY = 'jp_deck_opts_v1';
+  var SEP = '\u2016';   /* Trennzeichen im Feld: "Deutsch ‖ English" */
+  var L = {
+    de: { settings: 'Einstellungen', close: 'Schließen', lang: 'Sprache', theme: 'Darstellung', auto: 'Auto', light: 'Hell', dark: 'Dunkel', accent: 'Akzentfarbe', color: 'Farbe',
+          widthLbl: 'Anzeigebreite', sizeJp: 'Größe Japanisch', sizeTr: 'Größe Übersetzung', fontTr: 'Schrift Übersetzung', alignTr: 'Ausrichtung Übersetzung', mincho: 'Mincho', sans: 'Sans', center: 'zentriert', left: 'links',
+          romajiLbl: 'Rōmaji statt Furigana', furi: 'Furigana über Kanji', strokesLbl: 'Kanji antippbar (Popup)', kiLbl: 'Kanji-Infos im Popup', keysLbl: 'Tastenkürzel (Desktop)', kbKanji: 'Kanji', kbRead: 'Lesung', kbStroke: 'Strichfolge', kbSet: 'Einstellungen', kbSwitch: 'Kanji wechseln', kbMode: 'Modus', kbNew: 'Neu', kbUndo: 'Zurück', kbWords: 'Wörter', kbClose: 'Schließen', kwLbl: 'Wörter mit diesem Kanji', kwHead: 'Wörter mit', kwOther: 'weitere', kwMore: 'mehr', kwLess: 'weniger', kwEn: 'Bedeutung nur auf Englisch', kiMean: 'Bedeutung', kiOn: 'On', kiKun: 'Kun', kiRad: 'Radikal', rdDeck: 'Im Deck mit diesem Radikal', rdVar: 'Varianten', rdAs: 'als', rdPos_l: 'links', rdPos_r: 'rechts', rdPos_t: 'oben', rdPos_b: 'unten', rdPos_tare: 'oben links', rdPos_nyo: 'unten links', rdPos_kamae: 'umschließend', rdOpen: 'Radikal-Infos', kiParts: 'Teile', kiStrokes: 'Striche', kiStroke1: 'Strich', kiGrade: 'Stufe', kiFreq: 'Häufigkeit', kiNone: 'Keine Kanji-Infos für dieses Zeichen.', kiEn: 'Bedeutung liegt nur auf Englisch vor', kiG8: 'Jōyō (Sek.)', kiG9: 'Jinmeiyō', kiGn: 'Klasse ', kiRank: 'Rang ', skReplay: 'Nochmal', skReset: 'Neu', skUndo: 'Zurück', skM_anim: 'Ansehen', skM_blind: 'Blind', skM_snap: 'Einrasten', skM_guide: 'Geführt', skDone: 'Geschafft ✓', skCmp: 'Vergleich', skWrite: 'Schreibe das Zeichen', skModes: 'Modus', skMissing: 'Keine Strichdaten für dieses Zeichen.', skNoFile: 'Strichdaten-Dateien (_kvg_….js) nicht gefunden.', skStroke: 'Strich', chips: 'Kapitel-Tags (Rückseite)', wrLbl: '書-Stempel auf Recall-Karten', wlLbl: '書-Stempel in der Wortliste', wpOpen: 'Wort schreiben', wpLbl: 'Wort schreiben (Recall)', wpChar: 'Zeichen', wpPrevC: 'Vorheriges Zeichen', wpUndo: 'Strich', wpTpl: 'Vorlage', wpNext: 'Weiter', wpDone: 'Fertig', wpAuto: 'Automatisch weiter', wpKana: 'Kana vorgeben', wpMine: 'Dein Versuch', wpSol: 'Lösung', wpAgain: 'Nochmal', wpCmp: 'Vergleich', wpClear: 'Löschen', wpHelp: 'Hilfe', wpHLen: 'Länge', wpHKana: 'Kana', wpHTpl: 'Vorlage', wpHelped: 'mit Hilfe', wpExtra: 'zusätzlich', wpOpt: 'Kana (freiwillig)', wpFlip: 'Fertig · Lösung nach dem Umdrehen', kbWrite: 'Wort schreiben (Recall)', wrTip: 'Dieses Wort sollte man schreiben können (Kanji-Lektion)', autoRead: 'Lesung vorne sofort zeigen', gDone: 'Verstanden · aussortieren', gDoneSub: 'Die Anleitung kommt dann nicht mehr. Wiederfinden: Browser → Tag „Anleitung“.', gDoneOk: 'Ausgesetzt ✓', gDoneDesk: 'Dafür braucht es das Add-on (siehe oben). Ohne Add-on: Taste @ drücken (Karte aussetzen).', gDoneMob: 'Hier geht das nicht per Knopf. Setze die Karte über das Kartenmenü aus („Aussetzen“).', autoStroke: 'Strichfolge hinten sofort zeigen',
+          reset: 'Zurücksetzen', saved: 'Wird auf diesem Gerät gespeichert.', nosave: 'Speichern nicht möglich – gilt nur bis Anki neu startet.',
+          readShow: 'Lesung zeigen', readHide: 'Lesung verbergen', suru: 'する-Verb', fb: 'Keine Übersetzung in dieser Sprache – andere Sprache wird angezeigt' },
+    en: { settings: 'Settings', close: 'Close', lang: 'Language', theme: 'Appearance', auto: 'Auto', light: 'Light', dark: 'Dark', accent: 'Accent color', color: 'Color',
+          widthLbl: 'Display width', sizeJp: 'Japanese size', sizeTr: 'Translation size', fontTr: 'Translation font', alignTr: 'Translation alignment', mincho: 'Mincho', sans: 'Sans', center: 'centered', left: 'left',
+          romajiLbl: 'Rōmaji instead of furigana', furi: 'Furigana above kanji', strokesLbl: 'Clickable kanji (popup)', kiLbl: 'Kanji info in popup', keysLbl: 'Keyboard shortcuts (desktop)', kbKanji: 'Kanji', kbRead: 'Reading', kbStroke: 'Stroke order', kbSet: 'Settings', kbSwitch: 'Switch kanji', kbMode: 'Mode', kbNew: 'Reset', kbUndo: 'Undo', kbWords: 'Words', kbClose: 'Close', kwLbl: 'Words with this kanji', kwHead: 'Words with', kwOther: 'other', kwMore: 'more', kwLess: 'less', kwEn: 'Meaning in English only', kiMean: 'Meaning', kiOn: 'On', kiKun: 'Kun', kiRad: 'Radical', rdDeck: 'In the deck with this radical', rdVar: 'Variants', rdAs: 'as', rdPos_l: 'left', rdPos_r: 'right', rdPos_t: 'top', rdPos_b: 'bottom', rdPos_tare: 'top left', rdPos_nyo: 'bottom left', rdPos_kamae: 'enclosing', rdOpen: 'Radical info', kiParts: 'Parts', kiStrokes: 'Strokes', kiStroke1: 'Stroke', kiGrade: 'Level', kiFreq: 'Frequency', kiNone: 'No kanji info for this character.', kiEn: 'Meaning available in English only', kiG8: 'Jōyō (secondary)', kiG9: 'Jinmeiyō', kiGn: 'Grade ', kiRank: 'Rank ', skReplay: 'Replay', skReset: 'Reset', skUndo: 'Undo', skM_anim: 'Watch', skM_blind: 'Blind', skM_snap: 'Snap', skM_guide: 'Guided', skDone: 'Done ✓', skCmp: 'Compare', skWrite: 'Write the character', skModes: 'Mode', skMissing: 'No stroke data for this character.', skNoFile: 'Stroke data files (_kvg_….js) not found.', skStroke: 'Stroke', chips: 'Chapter tags (back)', wrLbl: '書 stamp on recall cards', wlLbl: '書 stamp in word list', wpOpen: 'Write word', wpLbl: 'Write word (recall)', wpChar: 'Character', wpPrevC: 'Previous character', wpUndo: 'Stroke', wpTpl: 'Template', wpNext: 'Next', wpDone: 'Done', wpAuto: 'Auto advance', wpKana: 'Kana given', wpMine: 'Your attempt', wpSol: 'Solution', wpAgain: 'Again', wpCmp: 'Compare', wpClear: 'Clear', wpHelp: 'Hint', wpHLen: 'length', wpHKana: 'kana', wpHTpl: 'template', wpHelped: 'with hints', wpExtra: 'extra', wpOpt: 'kana (optional)', wpFlip: 'Done · answer after turning the card', kbWrite: 'Write word (recall)', wrTip: 'You should be able to write this word (kanji lesson)', autoRead: 'Show reading on front immediately', gDone: 'Got it · put away', gDoneSub: 'The guide will not come back. To find it again: browser → tag “Anleitung”.', gDoneOk: 'Suspended ✓', gDoneDesk: 'This needs the add-on (see above). Without it: press @ (suspend card).', gDoneMob: 'This app has no button for it. Suspend the card from the card menu (“Suspend”).', autoStroke: 'Show stroke order on back immediately',
+          reset: 'Reset', saved: 'Saved on this device.', nosave: 'Cannot save – only valid until Anki restarts.',
+          readShow: 'Show reading', readHide: 'Hide reading', suru: 'する-verb', fb: 'No translation in this language – showing the other language' }
+  };
+  function t(k) { var d = L[o.lang] || L.de; return d[k] !== undefined ? d[k] : k; }
+  var root = document.getElementById('jp-root'); if (!root) return;
+  var MODE = root.getAttribute('data-mode');
+  /* Anki-Desktop bringt eigene Button-Stile mit (reviewer.css: margin 1em .5em; webview.css: Hover-Verlauf, Rahmen, Druck-Schatten).
+     Diese Regeln werden so umgeschrieben, dass sie für Buttons dieser Karte nicht mehr greifen – andere Notiztypen behalten sie
+     (:not(:where(…)) ändert die Spezifität nicht). Auf dem Handy gibt es diese Stylesheets nicht → nichts zu tun. */
+  (function () {
+    var EL = /(^|[\s>+~(,])button(?![\w-])/g, X = ':not(:where(.jp-root *))';
+    function walk(rs) {
+      for (var i = 0; i < rs.length; i++) {
+        var r = rs[i], sel = r.selectorText;
+        if (sel && sel.indexOf('jp-root') < 0 && /(^|[\s>+~(,])button(?![\w-])/.test(sel)) { try { r.selectorText = sel.replace(EL, '$1button' + X); } catch (e) {} }
+        if (r.cssRules) walk(r.cssRules);
+      }
+    }
+    [].forEach.call(document.styleSheets, function (sh) { if (sh.href && sh.href.indexOf('/_anki/') >= 0) { try { walk(sh.cssRules); } catch (e) {} } });
+  })();
+  /* 書-Stempel (rund, Doppelring, Tinten-Optik), immer dasselbe Muster (seed 57); Text wird kaum abgenutzt, damit das Kanji lesbar bleibt */
+  var STAMP_SEED = 57;
+  function stamp(seed) {
+    var f = function (id, A, B, D, sd) {
+      return '<filter id="' + id + '" x="-10%" y="-10%" width="120%" height="120%">' +
+        '<feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="' + sd + '" result="t1"/>' +
+        '<feDisplacementMap in="SourceGraphic" in2="t1" scale="' + D + '" xChannelSelector="R" yChannelSelector="G" result="d"/>' +
+        '<feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="3" seed="' + (sd + 11) + '" result="t2"/>' +
+        '<feColorMatrix in="t2" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -' + A + ' 0 0 0 ' + B + '" result="m"/>' +
+        '<feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="1" seed="' + (sd + 29) + '" result="t3"/>' +
+        '<feColorMatrix in="t3" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0.4 0 0 0 0.82" result="b"/>' +
+        '<feComposite in="d" in2="m" operator="in" result="e"/><feComposite in="e" in2="b" operator="in"/></filter>';
+    };
+    var r = 'jpsR' + seed, x = 'jpsT' + seed;
+    return '<svg viewBox="0 0 100 100" aria-hidden="true"><defs>' + f(r, 9, 5.8, 2.5, seed) + f(x, 9, 6.3, 1.5, seed) + '</defs>' +
+      '<g filter="url(#' + r + ')" fill="none" stroke="currentColor"><circle cx="50" cy="50" r="45" stroke-width="6"/><circle cx="50" cy="50" r="37" stroke-width="2"/></g>' +
+      '<g filter="url(#' + x + ')"><text x="50" y="53" text-anchor="middle" dominant-baseline="central" font-size="50" font-weight="700" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" style="font-family:var(--jp-font)">書</text></g></svg>';
+  }
+  var MUSTW = /(^|\s)(Genki\d::Chapter\d+::Kanji|Tobira::第\d+課::漢字RW|Radikal漢字::\S+)(?=\s|$)/.test("{{Tags}}");   /* Wort aus einer Kanji-Lektion: schreiben können */
+  var IC = {
+    auto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></svg>',
+    light: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>',
+    dark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>'
+  };
+  var SCHEMA = [
+    { k: 'lang', t: 'seg', lk: 'lang', ow: 5.2, o: [['de', 'Deutsch'], ['en', 'English']] },
+    { k: 'theme', t: 'seg', lk: 'theme', ow: 3.6, o: [['auto', 'auto', IC.auto], ['light', 'light', IC.light], ['dark', 'dark', IC.dark]] },
+    { k: 'accent', t: 'sw', lk: 'accent', o: [6, 215, 150, 270, 38] },
+    { k: 'jpScale', t: 'rg', lk: 'sizeJp', min: 50, max: 200, step: 5 },
+    { k: 'deScale', t: 'rg', lk: 'sizeTr', min: 50, max: 200, step: 5 },
+    { k: 'width', t: 'rg', lk: 'widthLbl', min: 30, max: 100, step: 5 },
+    { k: 'deFont', t: 'seg', lk: 'fontTr', ow: 4.8, o: [['mincho', 'mincho'], ['sans', 'sans']] },
+    { k: 'align', t: 'seg', lk: 'alignTr', ow: 5.4, o: [['center', 'center'], ['left', 'left']] },
+    { k: 'romaji', t: 'tg', lk: 'romajiLbl' },
+    { k: 'furi', t: 'tg', lk: 'furi', ndep: 'romaji' },
+    { k: 'chips', t: 'tg', lk: 'chips' },
+    { k: 'writeHint', t: 'tg', lk: 'wrLbl', mode: 'recall' },
+    { k: 'writePad', t: 'tg', lk: 'wpLbl', mode: 'recall' },
+    { k: 'strokes', t: 'tg', lk: 'strokesLbl' },
+    { k: 'kanjiInfo', t: 'tg', lk: 'kiLbl', dep: 'strokes' },
+    { k: 'kanjiWords', t: 'tg', lk: 'kwLbl', dep: 'strokes' },
+    { k: 'writeList', t: 'tg', lk: 'wlLbl', dep: 'kanjiWords' },
+    { k: 'autoRead', t: 'tg', lk: 'autoRead', mode: 'rec', dep: 'furi|romaji' }
+  ];
+  var storeOK = true, o = {};
+  function load() {
+    var s = null, k;
+    if (window.__jpOpts) s = window.__jpOpts;
+    else { try { s = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { storeOK = false; } }
+    o = {}; for (k in D) o[k] = (s && s[k] !== undefined) ? s[k] : D[k];
+  }
+  function save() {
+    window.__jpOpts = o;
+    try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) { storeOK = false; }
+    hint();
+  }
+  function cls(el, c, on) { if (el.classList) el.classList.toggle(c, !!on); }
+  /* AnkiMobile wertet Taps auf „normale“ Elemente als Karten-Geste (Antwort/gut/schlecht) und verzögert sie.
+     Klasse „tappable“ = Tap an das Element durchreichen (AnkiMobile-Handbuch). */
+  function tpNode(n) { if (!n || n.nodeType !== 1) return; n.classList.add('tappable'); var a = n.querySelectorAll('*'), i; for (i = 0; i < a.length; i++) a[i].classList.add('tappable'); }
+  function noGesture(n) { if (!n || n.__jpNG) return; n.__jpNG = 1; ['touchstart', 'touchmove', 'touchend'].forEach(function (t) { n.addEventListener(t, function (e) { e.stopPropagation(); }, { passive: true }); }); }
+  function tapAll() { [].forEach.call(document.querySelectorAll('.kj, .btn, .jp-gear, .jp-panel, .jp-scrim, .jp-sk-wrap, .jp-wp-wrap'), tpNode); [].forEach.call(document.querySelectorAll('.jp-panel, .jp-scrim, .jp-sk-wrap, .jp-wp-wrap'), noGesture); }
+  try { new MutationObserver(function (ms) { ms.forEach(function (m) { if (m.type === 'attributes') { var t = m.target; if (t.closest && !t.classList.contains('tappable') && t.closest('.jp-panel, .jp-sk-wrap, .jp-scrim, .jp-wp-wrap')) t.classList.add('tappable'); return; } [].forEach.call(m.addedNodes, function (n) { if (n.nodeType === 1 && n.closest && n.closest('.jp-panel, .jp-sk-wrap, .jp-scrim, .jp-wp-wrap')) tpNode(n); }); }); }).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] }); } catch (e) {}
+  function apply() {
+    var b = document.body;
+    document.documentElement.lang = o.lang === 'en' ? 'en' : 'de';      /* für Silbentrennung */
+    cls(b, 'jp-light', o.theme === 'light'); cls(b, 'jp-dark', o.theme === 'dark');
+    cls(b, 'jp-desans', o.deFont === 'sans'); cls(b, 'jp-left', o.align === 'left');
+    cls(b, 'jp-nofuri', !(o.furi || o.romaji)); cls(b, 'jp-romaji', !!o.romaji); cls(b, 'jp-nochips', !o.chips); cls(b, 'jp-nostroke', !o.strokes);
+    b.style.setProperty('--jp-scale', o.jpScale / 100);
+    b.style.setProperty('--de-scale', o.deScale / 100);
+    setW();
+    b.style.setProperty('--acc-h', o.accent);
+    /* Seitenhintergrund: Anki malt oft eine eigene Farbe auf <html>, daher dort ebenfalls setzen */
+    try {
+      var cs = getComputedStyle(b), bg = cs.getPropertyValue('--bg').trim(), de = document.documentElement;
+      var ink = cs.getPropertyValue('--ink').trim();
+      if (bg) { de.style.setProperty('background', bg, 'important'); b.style.setProperty('background', bg, 'important'); }
+      if (ink) { de.style.setProperty('color', ink, 'important'); b.style.setProperty('color', ink, 'important'); }
+      var dark = o.theme === 'dark' || (o.theme === 'auto' && /night/i.test(b.className + ' ' + de.className));
+      de.style.colorScheme = dark ? 'dark' : 'light';
+    } catch (e) {}
+    romajiApply(!!o.romaji); renderText(); modeSync(); tapAll();
+  }
+  var wrapEl = document.querySelector('.wrap');
+  function setW() {                            /* Breite in % der Kartenbreite; nie schmaler als 11rem (bzw. der Bildschirm) */
+    var b = document.body;
+    if (o.width) { b.style.setProperty('--jp-w', 'max(' + o.width + '%, min(100%, 11rem))'); b.style.setProperty('--jp-wmax', 'none'); }
+    else { b.style.removeProperty('--jp-w'); b.style.removeProperty('--jp-wmax'); }
+  }
+  function autoW() {                           /* aktuelle automatische Breite als % (für die Anzeige am Regler) */
+    try { var p = Math.round(wrapEl.offsetWidth / root.clientWidth * 100 / 5) * 5; return Math.max(30, Math.min(100, p || 100)); } catch (e) { return 100; }
+  }
+  var raf = 0, dragT = 0;
+  function scaleOnly() {                       /* billiger Pfad fürs Ziehen: nur die zwei Größenwerte */
+    if (raf) return;
+    raf = (window.requestAnimationFrame || function (f) { return setTimeout(f, 16); })(function () {
+      raf = 0; document.body.style.setProperty('--jp-scale', o.jpScale / 100); document.body.style.setProperty('--de-scale', o.deScale / 100); setW();
+    });
+  }
+  function dragging() { cls(root, 'jp-drag', true); clearTimeout(dragT); dragT = setTimeout(function () { cls(root, 'jp-drag', false); }, 220); }
+  /* ---- Text der gewählten Sprache einsetzen ("Deutsch ‖ English"; fehlt eine Seite, gilt die andere) ---- */
+  function txt(id) { var r = document.getElementById(id); if (!r) return ''; var h = r.innerHTML.trim(); return h.replace(/<br\s*\/?>|&nbsp;|\s/gi, '').replace(/<[^>]*>/g, '') ? h : ''; }
+  function pick(base) {                         /* Feld der gewählten Sprache; fehlt es, das andere mit kleinem Sprach-Zeichen */
+    var de = txt(base + '-de'), en = txt(base + '-en'), want = o.lang === 'en' ? en : de, other = o.lang === 'en' ? de : en;
+    if (want) return want;
+    if (!other) return '';
+    var c = o.lang === 'en' ? 'DE' : 'EN';
+    return other + ' <span class="jp-fb" title="' + t('fb') + '" aria-label="' + t('fb') + '">' + c + '</span>';
+  }
+  function relabel() {                          /* Panel sofort in der gewählten Sprache beschriften (ohne Neuaufbau) */
+    if (!panel) return;
+    [].forEach.call(panel.querySelectorAll('[data-t]'), function (e) { e.textContent = t(e.getAttribute('data-t')); });
+    [].forEach.call(panel.querySelectorAll('[data-tt]'), function (e) { var v = t(e.getAttribute('data-tt')); e.title = v; e.setAttribute('aria-label', v); });
+    [].forEach.call(panel.querySelectorAll('[data-ta]'), function (e) { e.setAttribute('aria-label', t(e.getAttribute('data-ta'))); });
+    hint();
+  }
+  function renderText() {
+    var m = document.getElementById('m-out'); if (m) m.innerHTML = pick('m');
+    var s = document.getElementById('s-out'); if (s) s.innerHTML = pick('s');
+    var l = document.getElementById('suru-lbl'); if (l) l.textContent = t('suru');
+    try { renderChips(); } catch (e) {}   /* Tag-Chips in der gewählten Sprache */
+    var wr = document.getElementById('jp-wr'); if (wr) { wr.hidden = !(MUSTW && o.writeHint); if (!wr.firstChild || wr.firstChild.nodeType !== 1) { wr.innerHTML = stamp(STAMP_SEED); } wr.title = t('wrTip'); wr.setAttribute('aria-label', t('wrTip')); }
+    cls(document.body, 'jp-nowr', !o.writeList);
+    var wpb = document.getElementById('jp-wpb'); if (wpb) { wpb.parentNode.hidden = !(o.writePad && wpChars().length); wpb.lastChild.textContent = t('wpOpen'); }
+    if (gear) gear.setAttribute('aria-label', t('settings')); if (panel) panel.setAttribute('aria-label', t('settings'));
+    var gd = document.getElementById('g-de'), ge = document.getElementById('g-en');
+    var gb = document.getElementById('jp-gdone'); if (gb) { gb.lastChild.textContent = t('gDone'); var gs = document.getElementById('g-dsub'); if (gs && !gs.getAttribute('data-x')) gs.textContent = t('gDoneSub'); }
+    if (gd && ge) { var hasDe = gd.textContent.trim(), hasEn = ge.textContent.trim(); var de = o.lang === 'de' ? (hasDe || !hasEn) : (!hasEn && hasDe); gd.hidden = !de; ge.hidden = de; }
+    relabel();
+  }
+  /* ---- Anleitung: „Verstanden · aussortieren“ = Karte aussetzen ----
+     Desktop: über das Add-on (Nachricht jpGuideDone) · AnkiDroid: JS-API · sonst: Hinweis, wie man es von Hand macht */
+  (function () {
+    var gb = document.getElementById('jp-gdone'), gs = document.getElementById('g-dsub'); if (!gb) return;
+    function note(k) { if (gs) { gs.textContent = t(k); gs.setAttribute('data-x', '1'); cls(gs, 'warn', k !== 'gDoneOk'); } }
+    gb.onclick = function () {
+      if (typeof AnkiDroidJS !== 'undefined') {
+        try { var api = new AnkiDroidJS({ version: '0.0.3', developer: 'https://ankiweb.net/shared/info/1607352118' });
+          Promise.resolve(api.ankiSuspendCard()).then(function (r) { if (r && r.success === false) note('gDoneMob'); else { note('gDoneOk'); gb.disabled = true; } }, function () { note('gDoneMob'); });
+        } catch (e) { note('gDoneMob'); }
+        return;
+      }
+      if (typeof pycmd === 'function') { try { pycmd('jpGuideDone', function (r) { if (r === 'ok') { note('gDoneOk'); gb.disabled = true; } else note('gDoneDesk'); }); } catch (e) { note('gDoneDesk'); } return; }
+      note('gDoneMob');
+    };
+  })();
+  /* ---- kartenspezifisches Verhalten ---- */
+  var btn = document.getElementById('tgl'), A = document.getElementById('v-a'), B = document.getElementById('v-b');
+  var shown = null;
+  function setView(second) {
+    if (!btn || !A || !B) return; shown = second;
+    A.style.display = second ? 'none' : ''; B.style.display = second ? '' : 'none';
+    btn.textContent = MODE === 'rec' ? (second ? t('readHide') : t('readShow')) : '';
+  }
+  function hasKanji() { var t = (MODE === 'rec' ? A : B).textContent; return /[一-鿿]/.test(t); }
+  function modeSync() {
+    if (!btn || !A || !B) return;
+    if (!hasKanji()) { btn.style.display = 'none'; return; }
+    if (MODE === 'rec' && !(o.furi || o.romaji)) {            /* ohne Furigana gibt es nichts zu zeigen: kein Button, nur Kanji */
+      btn.style.display = 'none'; shown = false; A.style.display = ''; B.style.display = 'none'; return;
+    }
+    btn.style.display = '';
+    setView(MODE === 'rec' ? !!o.autoRead : false);
+  }
+  if (btn) btn.addEventListener('click', function () { setView(!shown); });
+  /* ---- Kapitel-Chips (Tags; Anzeige je nach Kartensprache übersetzt, die echten Tag-Namen bleiben unverändert) ---- */
+  var chipLeaves = [];
+  var CHIPT = { 'Basic': ['Basis', 'Basic'], 'Kanji': ['Kanji', 'Kanji'], 'Kanji-Special': ['Kanji-Spezial', 'Kanji special'], 'Special': ['Spezial', 'Special'],
+    '会話文': ['Dialog', 'Dialogue'], '読み物': ['Lesetext', 'Reading'], '討論': ['Diskussion', 'Discussion'], '発表': ['Präsentation', 'Presentation'],
+    'ストーリーを紹介する': ['Geschichte vorstellen', 'Introduce a story'], '漢字R': ['Kanji (lesen)', 'Kanji (read)'], '漢字RW': ['Kanji (lesen + schreiben)', 'Kanji (read + write)'],
+    'Radikal漢字': ['Radikal-Kanji', 'Radical kanji'], 'Anleitung': ['Anleitung', 'Guide'] };
+  function chipSeg(s) {
+    var en = o.lang === 'en', m;
+    var n = function (x) { return String(parseInt(x.replace(/[０-９]/g, function (c) { return String(c.charCodeAt(0) - 65296); }), 10)); };
+    if (CHIPT[s]) return CHIPT[s][en ? 1 : 0];
+    if ((m = /^Genki(\d)$/.exec(s))) return 'Genki ' + m[1];
+    if ((m = /^Chapter(\d+)$/.exec(s))) return (en ? 'Chapter ' : 'Kapitel ') + n(m[1]);
+    if ((m = /^第([\d０-９]+)課$/.exec(s))) return (en ? 'Lesson ' : 'Lektion ') + n(m[1]);
+    if ((m = /^会話文([\d０-９]+)$/.exec(s))) return (en ? 'Dialogue ' : 'Dialog ') + n(m[1]);
+    if ((m = /^読み物([\d０-９]+)$/.exec(s))) return (en ? 'Reading ' : 'Lesetext ') + n(m[1]);
+    if ((m = /^(\d+)\.Semester$/.exec(s))) return en ? 'Semester ' + m[1] : m[1] + '. Semester';
+    return s;
+  }
+  function renderChips() {
+    var box = document.getElementById('chips'); if (!box) return;
+    box.innerHTML = '';
+    (chipLeaves || []).forEach(function (tg) { var s = document.createElement('span'); s.className = 'chip'; s.textContent = tg.split('::').map(chipSeg).join(' › '); box.appendChild(s); });
+  }
+  try {
+    var tags = "{{Tags}}".trim().split(/\s+/).filter(Boolean);
+    chipLeaves = tags.filter(function (tg) { return !tags.some(function (x) { return x !== tg && x.indexOf(tg + '::') === 0; }); });
+    renderChips();
+  } catch (e) {}
+  /* ---- Panel ---- */
+  var pbEl = null, panel = document.getElementById('jp-panel'), scrim = document.getElementById('jp-scrim'), gear = document.getElementById('jp-gear'), hintEl;
+  function hint() { if (hintEl) hintEl.textContent = storeOK ? t('saved') : t('nosave'); }
+  function el(tag, c, txt) { var e = document.createElement(tag); if (c) e.className = c; if (txt) e.textContent = txt; return e; }
+  function build() {
+    panel.innerHTML = ''; var pb = el('div', 'jp-pb'); pbEl = pb;
+    var h = el('div', 'jp-ph'); var hb = el('b', '', t('settings')); hb.setAttribute('data-t', 'settings'); h.appendChild(hb);
+    var x = el('button', 'jp-x', '✕'); x.type = 'button'; x.setAttribute('aria-label', t('close')); x.setAttribute('data-ta', 'close'); x.onclick = close; h.appendChild(x); panel.appendChild(h); panel.appendChild(pb);
+    var depRows = [];
+    function isOff(s) {                          /* abhängige Option ausgrauen statt ausblenden (kein Neuaufbau, Animationen laufen weiter) */
+      if (s.dep) { var ok = false; s.dep.split('|').forEach(function (d) { if (o[d]) ok = true; }); if (!ok) return true; }
+      return !!(s.ndep && o[s.ndep]);
+    }
+    function syncDeps() { depRows.forEach(function (r) { var off = isOff(r.s); cls(r.row, 'dis', off); r.tg.disabled = off; r.tg.setAttribute('aria-disabled', off ? 'true' : 'false'); }); }
+    SCHEMA.forEach(function (s) {
+      if (s.mode && s.mode !== MODE) return;
+      if (MODE === 'guide' && ['lang', 'theme', 'accent', 'width'].indexOf(s.k) < 0) return;
+      var row = el('div', 'jp-row'), lab = el('div', 'jp-l', t(s.lk)), ctl = el('div', 'jp-ctl');
+      lab.setAttribute('data-t', s.lk); row.appendChild(lab); row.appendChild(ctl);
+      if (s.t === 'seg') {
+        var cur = 0; s.o.forEach(function (op, n) { if (op[0] === o[s.k]) cur = n; });
+        var g = el('fieldset', 'jp-seg'); g.style.setProperty('--n', s.o.length); g.style.setProperty('--ow', (s.ow || 5) + 'rem'); g.style.setProperty('--i', cur);
+        var lg = el('legend', 'jp-sr', t(s.lk)); lg.setAttribute('data-t', s.lk); g.appendChild(lg);
+        s.o.forEach(function (op, n) {
+          var lb = el('label', 'jp-o' + (n === cur ? ' on' : '')), ip = document.createElement('input');
+          ip.type = 'radio'; ip.name = 'jp-' + s.k; ip.value = op[0]; ip.className = 'jp-sr'; ip.checked = (n === cur);
+          var sp = el('span', 'jp-oi'); var oname = t(op[1]); if (op[2]) { sp.innerHTML = op[2]; lb.title = oname; lb.setAttribute('aria-label', oname); lb.setAttribute('data-tt', op[1]); } else { sp.textContent = oname; sp.setAttribute('data-t', op[1]); }
+          ip.addEventListener('change', function () {
+            var prev = +g.style.getPropertyValue('--i');
+            g.setAttribute('data-dir', n > prev ? 'r' : 'l');     /* Pille staucht sich in Bewegungsrichtung */
+            g.style.setProperty('--i', n);
+            g.classList.remove('go'); void g.offsetWidth; g.classList.add('go');
+            [].forEach.call(g.querySelectorAll('.jp-o'), function (x, m) { x.className = 'jp-o' + (m === n ? ' on' : ''); });
+            o[s.k] = op[0]; save(); apply();
+          });
+          lb.appendChild(ip); lb.appendChild(sp); g.appendChild(lb);
+        });
+        ctl.appendChild(g);
+      } else if (s.t === 'sw') {
+        var w = el('div', 'jp-sw');
+        s.o.forEach(function (hue) { var bt = el('button', o[s.k] === hue ? 'on' : ''); bt.type = 'button'; bt.style.background = 'hsl(' + hue + ' 62% 48%)'; bt.setAttribute('aria-label', t('color') + ' ' + hue);
+          bt.onclick = function () { o[s.k] = hue; save(); apply(); [].forEach.call(w.children, function (c) { c.className = ''; }); bt.className = 'on'; }; w.appendChild(bt); });
+        ctl.appendChild(w);
+      } else if (s.t === 'rg') {
+        var r = document.createElement('input'); r.type = 'range'; r.className = 'jp-rg'; r.min = s.min; r.max = s.max; r.step = s.step; var cur = o[s.k] || autoW(); r.value = cur;
+        var v = el('span', 'jp-val', cur + '%');
+        var fill = function () { r.style.setProperty('--f', (r.value - s.min) / (s.max - s.min)); }; fill();
+        r.oninput = function () { o[s.k] = +r.value; v.textContent = r.value + '%'; fill(); dragging(); scaleOnly(); };
+        r.onchange = function () { save(); apply(); };
+        ctl.appendChild(r); ctl.appendChild(v);
+      } else if (s.t === 'tg') {
+        var tg = el('button', 'jp-tog' + (o[s.k] ? ' on' : '')); tg.type = 'button'; tg.setAttribute('role', 'switch'); tg.setAttribute('aria-checked', !!o[s.k]);
+        tg.onclick = function () { o[s.k] = !o[s.k]; tg.className = 'jp-tog' + (o[s.k] ? ' on' : ''); void tg.offsetWidth; tg.classList.add('go'); setTimeout(function () { tg.classList.remove('go'); }, 460); tg.setAttribute('aria-checked', !!o[s.k]); save(); apply(); syncDeps(); };
+        ctl.appendChild(tg); depRows.push({ s: s, row: row, tg: tg });
+      }
+      pb.appendChild(row);
+    });
+    var f = el('div', 'jp-pf'); hintEl = el('span'); f.appendChild(hintEl);
+    var rs = el('button', 'jp-reset', t('reset')); rs.type = 'button'; rs.setAttribute('data-t', 'reset');
+    rs.onclick = function () { for (var k in D) o[k] = D[k]; save(); apply(); build(); }; f.appendChild(rs); pb.appendChild(f); syncDeps(); hint();
+  }
+  function ovl() { var on = root.classList.contains('jp-open') || !!skEl || !!wpEl; cls(document.body, 'jp-ovl', on); cls(document.documentElement, 'jp-ovl', on); }   /* offenes Fenster: Hintergrund nicht scrollbar */
+  function open() {
+    build(); cls(root, 'jp-open', true); ovl();
+    var r = panel && panel.getBoundingClientRect();   /* manche Apps (z. B. AnkiMobile) behandeln „fixed“ wie „absolute“: Fenster dann ins Bild holen */
+    if (r && (r.top < 0 || r.top > window.innerHeight - 60)) { try { panel.scrollIntoView({ block: 'start' }); } catch (e) { panel.scrollIntoView(true); } }
+  }
+  function close() { cls(root, 'jp-open', false); ovl(); }
+  if (gear) gear.addEventListener('click', function () { (root.classList.contains('jp-open') ? close : open)(); });
+  if (scrim) scrim.addEventListener('click', close);
+
+
+  /* ---- Rōmaji (Hepburn) aus Kana: vollautomatisch, keine zusätzliche Spalte ---- */
+  var RB = { 'あ':'a','い':'i','う':'u','え':'e','お':'o','か':'ka','き':'ki','く':'ku','け':'ke','こ':'ko','が':'ga','ぎ':'gi','ぐ':'gu','げ':'ge','ご':'go',
+    'さ':'sa','し':'shi','す':'su','せ':'se','そ':'so','ざ':'za','じ':'ji','ず':'zu','ぜ':'ze','ぞ':'zo','た':'ta','ち':'chi','つ':'tsu','て':'te','と':'to',
+    'だ':'da','ぢ':'ji','づ':'zu','で':'de','ど':'do','な':'na','に':'ni','ぬ':'nu','ね':'ne','の':'no','は':'ha','ひ':'hi','ふ':'fu','へ':'he','ほ':'ho',
+    'ば':'ba','び':'bi','ぶ':'bu','べ':'be','ぼ':'bo','ぱ':'pa','ぴ':'pi','ぷ':'pu','ぺ':'pe','ぽ':'po','ま':'ma','み':'mi','む':'mu','め':'me','も':'mo',
+    'や':'ya','ゆ':'yu','よ':'yo','ら':'ra','り':'ri','る':'ru','れ':'re','ろ':'ro','わ':'wa','ゐ':'i','ゑ':'e','を':'o','ん':'n','ゔ':'vu','ゕ':'ka','ゖ':'ke' };
+  var RSM = { 'ぁ':'a','ぃ':'i','ぅ':'u','ぇ':'e','ぉ':'o' }, RY = { 'ゃ':'a','ゅ':'u','ょ':'o' };
+  var RSP = { 'てぃ':'ti','でぃ':'di','とぅ':'tu','どぅ':'du','うぃ':'wi','うぇ':'we','うぉ':'wo','しぇ':'she','ちぇ':'che','じぇ':'je','いぇ':'ye','つぁ':'tsa','つぃ':'tsi','つぇ':'tse','つぉ':'tso','ふぁ':'fa','ふぃ':'fi','ふぇ':'fe','ふぉ':'fo','ゔぁ':'va','ゔぃ':'vi','ゔぇ':'ve','ゔぉ':'vo','くぁ':'kwa','くぃ':'kwi','くぇ':'kwe','くぉ':'kwo','ぐぁ':'gwa' };
+  var KANA = /[ぁ-ゖァ-ヺーゝゞヽヾ]/;
+  function toHira(s) { return s.replace(/[ァ-ヶ]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0x60); }); }
+  function morae(run) {                            /* Kana-Folge -> [{k: Kana, r: Rōmaji}] ; っ und ー als eigene Einheiten */
+    var h = toHira(run), orig = run, out = [], i = 0;
+    while (i < h.length) {
+      var c = h.charAt(i), n = h.charAt(i + 1), two = c + n, r;
+      if (c === 'っ') { out.push({ k: orig.charAt(i), r: '*', sok: 1 }); i++; continue; }
+      if (c === 'ー') { out.push({ k: orig.charAt(i), r: '-', lng: 1 }); i++; continue; }
+      if (RSP[two]) { out.push({ k: orig.substr(i, 2), r: RSP[two] }); i += 2; continue; }
+      if (RB[c] !== undefined) {
+        r = RB[c];
+        if (RY[n]) {
+          var y = RY[n]; var base = r;
+          if (base === 'shi' || base === 'chi') r = base.slice(0, 2) + y;
+          else if (base === 'ji') r = 'j' + y;
+          else r = base.slice(0, -1) + 'y' + y;
+          out.push({ k: orig.substr(i, 2), r: r }); i += 2; continue;
+        }
+        if (RSM[n] && /u$/.test(r) && c !== 'う') { /* ふぁ等は RSP; ここは一般形 */ }
+        out.push({ k: orig.charAt(i), r: r }); i++; continue;
+      }
+      if (RSM[c]) { out.push({ k: orig.charAt(i), r: RSM[c] }); i++; continue; }
+      if (RY[c]) { out.push({ k: orig.charAt(i), r: 'y' + RY[c] }); i++; continue; }
+      if (c === 'ゎ') { out.push({ k: orig.charAt(i), r: 'wa' }); i++; continue; }
+      out.push({ k: orig.charAt(i), r: orig.charAt(i) }); i++;
+    }
+    return out;
+  }
+  var MAC = { a: 'ā', i: 'ī', u: 'ū', e: 'ē', o: 'ō' };
+  function romWord(s) {                            /* Wort-Rōmaji (für Furigana über Kanji): Verdopplung, ā ī ū ē ō, n' */
+    var ms = morae(s), out = '', i, m, nx, rr;
+    for (i = 0; i < ms.length; i++) {
+      m = ms[i]; nx = ms[i + 1];
+      if (m.sok) { rr = nx && nx.r && nx.r !== '*' && nx.r !== '-' ? nx.r : ''; out += /^ch/.test(rr) ? 't' : rr.charAt(0); continue; }
+      if (m.lng) { var l = out.charAt(out.length - 1); out = out.slice(0, -1) + (MAC[l] || l); continue; }
+      if (m.r === 'n' && nx && /^[aiueoy]/.test(nx.r || '')) { out += "n'"; continue; }
+      out += m.r;
+    }
+    return out.replace(/ou|oo/g, 'ō').replace(/uu/g, 'ū');   /* Lesung eines Kanji-Wortes: lange Vokale wie im Lehrbuch (tōkyō) */
+  }
+  var PTC = /(では|には|とは|へは|からは|までは|よりは|こんにちは|こんばんは)$/;
+  function wrapMorae(run) {                        /* Kana-Folge -> DocumentFragment mit <ruby>Kana<rt>romaji</rt></ruby> je Einheit */
+    var ms = morae(run), frag = document.createDocumentFragment(), h = toHira(run), i;
+    var pw = -1, pe = -1;                           /* Partikel: は=wa, へ=e, を=o */
+    if (h === 'は' || PTC.test(h)) pw = h.length - 1;
+    if (h === 'へ') pe = 0;
+    var pos = 0;
+    for (i = 0; i < ms.length; i++) {
+      var m = ms[i], r = m.r, nx = ms[i + 1];
+      if (m.sok) { var rr = nx && nx.r && nx.r !== '*' && nx.r !== '-' ? nx.r : ''; r = rr ? (/^ch/.test(rr) ? 't' : rr.charAt(0)) : '·'; }
+      else if (m.lng) { var pv = ms[i - 1]; var vv = pv && pv.r ? pv.r.charAt(pv.r.length - 1) : ''; r = /[aiueo]/.test(vv) ? vv : 'ー'; }
+      else if (pos === pw && m.k === 'は') r = 'wa';
+      else if (pos === pe && m.k === 'へ') r = 'e';
+      pos += m.k.length;
+      var rb = document.createElement('ruby'); rb.className = 'rk'; rb.appendChild(document.createTextNode(m.k));
+      var rt = document.createElement('rt'); rt.textContent = r; rb.appendChild(rt); frag.appendChild(rb);
+    }
+    return frag;
+  }
+  var romOn = false;
+  function romajiApply(on) {
+    if (on === romOn) return; romOn = on;
+    [].forEach.call(root.querySelectorAll('.jp'), function (host) {
+      if (host.classList.contains('font-stroke') || (host.closest && host.closest('.font-stroke'))) return;
+      if (on) {
+        [].forEach.call(host.querySelectorAll('rt'), function (rt) {
+          if (!rt.hasAttribute('data-o')) rt.setAttribute('data-o', rt.textContent);
+          var s = rt.getAttribute('data-o'); rt.textContent = KANA.test(s) ? s.replace(/[ぁ-ゖァ-ヺー]+/g, function (x) { return romWord(x); }) : s;
+        });
+        var w = document.createTreeWalker(host, 4, null, false), nd, nodes = [];
+        while ((nd = w.nextNode())) { var pr = nd.parentNode; if (KANA.test(nd.nodeValue) && !(pr.closest && (pr.closest('ruby') || (MODE === 'rec' && pr.closest('#v-a'))))) nodes.push(nd);   /* Vorderseite (Expression) bleibt ohne Rōmaji, bis die Lesung gezeigt wird */ }
+        nodes.forEach(function (tn) {
+          var frag = document.createDocumentFragment(), parts = tn.nodeValue.split(/([ぁ-ゖァ-ヺー]+)/);
+          parts.forEach(function (p, i) { if (!p) return; if (i % 2) frag.appendChild(wrapMorae(p)); else frag.appendChild(document.createTextNode(p)); });
+          tn.parentNode.replaceChild(frag, tn);
+        });
+      } else {
+        [].forEach.call(host.querySelectorAll('ruby.rk'), function (rb) { rb.parentNode.replaceChild(document.createTextNode(rb.firstChild.nodeValue), rb); });
+        [].forEach.call(host.querySelectorAll('rt[data-o]'), function (rt) { rt.textContent = rt.getAttribute('data-o'); });
+        host.normalize();
+      }
+    });
+  }
+  /* ---- Strichfolge-Popup: Antippen eines Kanji, animiert, komplett offline (Daten aus _kanjivg.js, KanjiVG CC BY-SA 3.0) ---- */
+  var KJ = /[㐀-䶿一-鿿々豈-﫿]/, NS = 'http://www.w3.org/2000/svg', skEl = null, skTimers = [], skList = [], skCur = '', skUndoFn = null, loadedKvg = window.__jpKvg = window.__jpKvg || {};
+  function wrapKanji() {
+    if (MODE === 'rec' && !document.getElementById('jp-back')) return;   /* Rec-Vorderseite: Kanji nicht antippbar – das Popup würde die Bedeutung verraten */
+    [].forEach.call(root.querySelectorAll('.jp'), function (host) {
+      var w = document.createTreeWalker(host, 4, null, false), n, nodes = [];
+      while ((n = w.nextNode())) { if (!n.parentNode.closest || !n.parentNode.closest('rt') ) { if (KJ.test(n.nodeValue)) nodes.push(n); } }
+      nodes.forEach(function (tn) {
+        var frag = document.createDocumentFragment(), buf = '';
+        chars(tn.nodeValue).forEach(function (ch) {
+          if (KJ.test(ch)) { if (buf) { frag.appendChild(document.createTextNode(buf)); buf = ''; } var s = document.createElement('span'); s.className = 'kj'; s.textContent = ch; frag.appendChild(s); } else buf += ch;
+        });
+        if (buf) frag.appendChild(document.createTextNode(buf));
+        tn.parentNode.replaceChild(frag, tn);
+      });
+    });
+  }
+  var waiters = {};
+  function loadF(key, cb) {                      /* Datei aus dem Medienordner einmalig nachladen */
+    var st = loadedKvg[key];
+    if (st === 'ok' || st === 'err') { cb(st); return; }
+    (waiters[key] = waiters[key] || []).push(cb);
+    if (st === 'loading') return;
+    loadedKvg[key] = 'loading';
+    var s = document.createElement('script'); s.src = key;
+    var fin = function (r) { loadedKvg[key] = r; var w = waiters[key] || []; waiters[key] = []; w.forEach(function (f) { f(r); }); };
+    s.onload = function () { fin('ok'); }; s.onerror = function () { fin('err'); };
+    document.head.appendChild(s);
+  }
+  function chars(s) { return String(s || '').match(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[\s\S]/g) || []; }   /* Zeichen inkl. seltener Kanji außerhalb der BMP (z. B. 𠆢) */
+  var glyphOK = {};
+  function hasGlyph(ch) {                         /* hat das Gerät eine Schrift für das Zeichen? sonst nicht anzeigen (kein □/�) */
+    if (ch.length < 2) return true; if (glyphOK[ch] !== undefined) return glyphOK[ch];
+    try {
+      var cv = document.createElement('canvas'); cv.width = cv.height = 40; var x = cv.getContext('2d');
+      var img = function (c) { x.clearRect(0, 0, 40, 40); x.font = '32px ' + getComputedStyle(root).getPropertyValue('--jp-font') + ', sans-serif'; x.fillText(c, 2, 34); return x.getImageData(0, 0, 40, 40).data.join(','); };
+      glyphOK[ch] = img(ch) !== img('\uD87E\uDFFF');   /* Vergleich mit einem sicher fehlenden Zeichen */
+    } catch (e) { glyphOK[ch] = true; }
+    return glyphOK[ch];
+  }
+  function hex2(ch) { return ('0' + (ch.charCodeAt(0) >> 8).toString(16)).slice(-2); }
+  function kvgFile(ch) { return /[\u3041-\u30ff]/.test(ch) ? '_kvg_kana.js' : '_kvg_' + hex2(ch) + '.js'; }   /* Kana liegen in einer eigenen Datei */
+  function gradeText(g) { return g >= 1 && g <= 6 ? '小' + g : (g === 7 || g === 8 ? '中' : (g >= 9 ? '人名用' : '')); }   /* Schulstufe: 小1–小6, 中 (übrige Jōyō-Kanji, ab der Mittelschule), 人名用 */
+  function kunStems(arr) {                      /* い・きる, い・かす, い・ける -> ein Chip „い“ mit den Endungen きる・かす・ける */
+    var order = [], map = {}, seen = {};
+    arr.forEach(function (s) {
+      var p = s.replace(/-/g, '').split('・'), st = p[0], en = p.slice(1).join(''); if (!st || seen[st + en]) return; seen[st + en] = 1;   /* う・まれる und うま・れる sind dasselbe Wort */
+      if (!map[st]) { map[st] = []; order.push(st); }
+      if (en && map[st].indexOf(en) < 0) map[st].push(en);
+    });
+    return order.map(function (st) { return map[st].length ? st + '・' + map[st].join('・') : st; });
+  }
+  function kiRender(ch) {
+    var box = skEl.querySelector('.jp-ki'); if (!box) return; box.innerHTML = '';
+    if (!o.kanjiInfo) { box.hidden = true; return; } box.hidden = false;
+    loadAll(kiFiles(ch), function () {             /* alle Dateien gleichzeitig laden statt nacheinander */
+      if (!skEl || skCur !== ch) return; box.innerHTML = '';
+      var d = window.KVI ? window.KVI[ch] : null, X = window.KVX ? window.KVX[ch] : null;   /* X: [deutsche Bedeutungen, Radikal-Form, Position] */
+      if (!d) { box.appendChild(el('div', 'jp-kn', t('kiNone'))); return; }
+      var row = function (k, node) { var r = el('div', 'jp-kr'), l = el('span', 'jp-kl', t(k)); r.appendChild(l); r.appendChild(node); box.appendChild(r); };
+      if (o.lang === 'de' && X && X[0] && X[0].length) row('kiMean', el('span', 'jp-kv', X[0].join('; ')));
+      else if (d[6] && d[6].length) {
+        var m = el('span', 'jp-kv', d[6].join('; '));
+        if (o.lang === 'de') { var b = el('span', 'jp-fb', 'EN'); b.title = t('kiEn'); m.appendChild(document.createTextNode(' ')); m.appendChild(b); }
+        row('kiMean', m);
+      }
+      var chips = function (arr, on) { var w = el('span', 'jp-kv jp-kc'); arr.forEach(function (s) { var c = el('span', 'jp-kchip' + (on ? ' on' : '')); var p = s.split('・'); c.appendChild(document.createTextNode(p[0])); if (p.length > 1) c.appendChild(el('i', '', p.slice(1).join('・'))); w.appendChild(c); }); return w; };
+      if (d[4] && d[4].length) row('kiOn', chips(d[4], true));
+      if (d[5] && d[5].length) row('kiKun', chips(kunStems(d[5]), false));
+      var R = window.KVR && d[3] ? window.KVR[d[3] - 1] : null;
+      if (R) {
+        var RN = window.KVRN ? window.KVRN[d[3]] : null, form = X && X[1] ? X[1] : R[0], pos = X && X[2] ? X[2] : '';
+        var rname = RN ? ((RN[1] && RN[1][pos]) || RN[0]) : '';
+        var rw = el('span', 'jp-kv jp-kc'), rc = el('button', 'jp-kchip rad go', form); rc.type = 'button'; rc.setAttribute('aria-expanded', 'false'); rc.title = t('rdOpen');
+        rw.appendChild(rc); rw.appendChild(el('span', 'jp-krn', '#' + d[3] + ' · ' + (o.lang === 'en' ? R[1] : R[2]) + (rname ? ' · ' : '')));
+        if (rname) rw.lastChild.appendChild(el('span', 'jp-krj', rname));
+        row('kiRad', rw);
+        var radRow = box.lastChild, card = null;
+        rc.onclick = function (e) {                 /* Radikal-Karte auf-/zuklappen */
+          e.stopPropagation();
+          if (card) { card.parentNode.removeChild(card); card = null; cls(rc, 'on', false); rc.setAttribute('aria-expanded', 'false'); return; }
+          card = radCard(d[3], R, RN, form, pos, rname, ch); radRow.parentNode.insertBefore(card, radRow.nextSibling); cls(rc, 'on', true); rc.setAttribute('aria-expanded', 'true'); tapAll();
+        };
+      }
+      var parts = (d[7] && d[7].length) ? d[7] : (X && X[4] ? chars(X[4]) : []);   /* seltene Kanji: Teile aus IDS */
+      if (parts.length) { var pw = el('span', 'jp-kv jp-kc'); parts.forEach(function (p) { pw.appendChild(el('span', 'jp-kchip part', p)); }); row('kiParts', pw); }
+      var meta = []; if (d[0]) meta.push(d[0] + ' ' + t(d[0] === 1 ? 'kiStroke1' : 'kiStrokes')); var gt = gradeText(X && X[5] ? X[5] : d[1]);   /* X[5]: aktueller Lehrplan (Ministerium), sonst KANJIDIC2 */ if (gt) meta.push(gt); if (X && X[3]) meta.push('N' + X[3]);   /* JLPT (inoffiziell, Jonathan Waller) */ if (d[2]) meta.push(t('kiRank') + d[2]);
+      if (meta.length) box.appendChild(el('div', 'jp-kmeta', meta.join(' · ')));
+    });
+  }
+  function kiFiles(ch) { return ['_kvi_' + hex2(ch) + '.js', '_kvr.js', '_kvl_' + hex2(ch) + '.js', '_kvrn4.js']; }
+  function loadAll(fs, cb) { var left = fs.length; fs.forEach(function (f) { loadF(f, function () { if (--left === 0) cb(); }); }); }
+  function prefetch(chars) {                      /* Daten der Kanji in der Radikal-Karte schon vorab laden → Öffnen ohne Wartezeit */
+    var seen = {}; chars.forEach(function (c) { [kvgFile(c)].concat(kiFiles(c)).forEach(function (f) { if (!seen[f] && loadedKvg[f] === undefined) { seen[f] = 1; loadF(f, function () {}); } }); });
+  }
+  var POSI = { l: '<rect x="1" y="1" width="6" height="14" rx="1.5"/>', r: '<rect x="9" y="1" width="6" height="14" rx="1.5"/>', t: '<rect x="1" y="1" width="14" height="5.5" rx="1.5"/>', b: '<rect x="1" y="9.5" width="14" height="5.5" rx="1.5"/>',
+    tare: '<path d="M1 2.5A1.5 1.5 0 0 1 2.5 1H15v5H6v9H1z"/>', nyo: '<path d="M1 1h5v9h9v5H2.5A1.5 1.5 0 0 1 1 13.5z"/>', kamae: '<path fill-rule="evenodd" d="M2.5 1h11A1.5 1.5 0 0 1 15 2.5v11a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 13.5v-11A1.5 1.5 0 0 1 2.5 1zM5 5v6h6V5z"/>' };
+  function radCard(n, R, RN, form, pos, rname, cur) {   /* Radikal-Karte: Name, Bedeutung, Position, Varianten, Kanji des Decks */
+    var c = el('div', 'jp-rdc'), top = el('div', 'jp-rdt');
+    top.appendChild(el('div', 'jp-rdg', form));
+    var info = el('div', 'jp-rdi'), nm = el('div', 'jp-rdn');
+    if (rname) { nm.appendChild(el('span', 'jp-rdk', rname)); nm.appendChild(el('span', 'jp-rdr', romWord(rname))); }
+    info.appendChild(nm);
+    info.appendChild(el('div', 'jp-rdm', (o.lang === 'en' ? R[1] : R[2]) + ' · #' + n + (RN && RN[3] ? ' · ' + RN[3] + ' ' + t(RN[3] === 1 ? 'kiStroke1' : 'kiStrokes') : '')));
+    var ln = el('div', 'jp-rdp');
+    if (pos && POSI[pos]) { var ic = el('span', 'jp-rdpi'); ic.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".45"/><g fill="var(--accent)">' + POSI[pos] + '</g></svg>'; ln.appendChild(ic); ln.appendChild(document.createTextNode(t('rdPos_' + pos) + ' ' + t('rdAs') + ' ')); ln.appendChild(el('b', '', { l: 'へん', r: 'つくり', t: 'かんむり', b: 'あし', tare: 'たれ', nyo: 'にょう', kamae: 'かまえ' }[pos])); }
+    var vars = chars((R[0] !== form ? R[0] : '') + (RN ? RN[2] : '')).filter(function (v, i, a) { return v !== form && a.indexOf(v) === i && hasGlyph(v); });
+    if (vars.length) { if (ln.firstChild) ln.appendChild(document.createTextNode(' · ')); ln.appendChild(document.createTextNode(t('rdVar') + ' ')); ln.appendChild(el('span', 'jp-rdv', vars.join(' '))); }
+    if (ln.firstChild) info.appendChild(ln);
+    top.appendChild(info); c.appendChild(top);
+    function list(ks, key, LIM) {                   /* Kanji-Chips: antippen öffnet sie in einem Popup darüber */
+      if (!ks.length) return;
+      var hd = el('div', 'jp-rdh'); hd.appendChild(document.createTextNode(t(key) + ' ')); hd.appendChild(el('span', 'jp-kwn', String(ks.length))); c.appendChild(hd);
+      var w = el('div', 'jp-rdw');
+      ks.forEach(function (k, i) {
+        var b = el('button', 'jp-kchip jp-rdx' + (k === cur ? ' on' : '') + (i >= LIM ? ' x' : ''), k); b.type = 'button';
+        b.onclick = function (e) { e.stopPropagation(); if (k !== cur) skPush(k); };   /* Kanji in einem Popup darüber öffnen (schließen → zurück) */
+        b.addEventListener('pointerdown', function () { prefetch([k]); });
+        w.appendChild(b);
+      });
+      setTimeout(function () { prefetch(ks.slice(0, LIM)); }, 250);   /* sichtbare Kanji im Hintergrund vorladen */
+      if (ks.length > LIM) { var mo = el('button', 'jp-kwb', t('kwMore') + ' +' + (ks.length - LIM)); mo.type = 'button'; mo.onclick = function (e) { e.stopPropagation(); cls(w, 'open', true); mo.parentNode.removeChild(mo); }; w.appendChild(mo); }
+      c.appendChild(w);
+    }
+    list(RN && RN[4] ? chars(RN[4]) : [], 'rdDeck', 12);   /* zwei Reihen, Rest über „mehr“ */
+    return c;
+  }
+  function kwRender(ch) {
+    var box = skEl.querySelector('.jp-kw'); if (!box) return; box.innerHTML = '';
+    if (!o.kanjiWords) { box.hidden = true; return; } box.hidden = true;
+    loadF('_kvw.js', function () {
+      if (!skEl || skCur !== ch) return; box.innerHTML = '';
+      var gs = window.KVW && window.KVW.k ? window.KVW.k[ch] : null, W = window.KVW ? window.KVW.w : null;
+      if (!gs || !W) return;
+      var cur = ''; try { var src = (MODE === 'rec' ? A : B); cur = src ? src.textContent.replace(/\s*\(する\)\s*$/, '').trim() : ''; } catch (e) {}
+      var n = 0; gs.forEach(function (g) { n += g[1].length; });
+      if (!n) return;
+      box.hidden = false;
+      var hd = el('div', 'jp-kwh'); hd.appendChild(document.createTextNode(t('kwHead') + ' ')); hd.appendChild(el('b', '', ch)); hd.appendChild(el('span', 'jp-kwn', String(n))); box.appendChild(hd);
+      gs.forEach(function (g) {
+        var grp = el('div', 'jp-kwg'), gh = el('div', 'jp-kwr'); gh.appendChild(el('span', 'jp-kchip' + (/[ァ-ヶ]/.test(g[0]) ? ' on' : ''), g[0] || t('kwOther'))); gh.appendChild(el('span', 'jp-kwn', String(g[1].length))); grp.appendChild(gh);
+        var list = el('div', 'jp-kwl'), LIM = 3;
+        g[1].forEach(function (wi, i) {
+          var w = W[wi], row = el('div', 'jp-kww' + (w[0] === cur ? ' cur' : '') + (w[5] ? ' wr' : '') + (i >= LIM ? ' x' : ''));
+          var ex = el('span', 'jp-kwe'); chars(w[0]).forEach(function (c) { if (c === ch) ex.appendChild(el('em', '', c)); else ex.appendChild(document.createTextNode(c)); });
+          row.appendChild(ex); row.appendChild(el('span', 'jp-kwk', w[1]));
+          var mean = o.lang === 'de' ? (w[2] || w[3]) : (w[3] || w[2]), mm = el('span', 'jp-kwm', mean);
+          if (o.lang === 'de' && !w[2] && w[3]) { var b = el('span', 'jp-fb', 'EN'); b.title = t('kwEn'); mm.appendChild(document.createTextNode(' ')); mm.appendChild(b); }
+          row.appendChild(mm);
+          if (w[4]) row.appendChild(el('span', 'jp-kwc', w[4]));
+          if (w[5]) { var pn = el('span', 'jp-kwp'); pn.innerHTML = stamp(STAMP_SEED); pn.title = t('wrTip'); pn.setAttribute('aria-label', t('wrTip')); row.appendChild(pn); }   /* 書-Stempel rechts, so hoch wie die ersten zwei Zeilen */
+          list.appendChild(row);
+        });
+        grp.appendChild(list);
+        if (g[1].length > LIM) {
+          var mo = el('button', 'jp-kwb', t('kwMore') + ' +' + (g[1].length - LIM)); mo.type = 'button';
+          mo.onclick = function () { var open = grp.classList.toggle('open'); mo.textContent = open ? t('kwLess') : t('kwMore') + ' +' + (g[1].length - LIM); };
+          grp.appendChild(mo);
+        }
+        box.appendChild(grp);
+      });
+    });
+  }
+  function skStop() { while (skTimers.length) clearTimeout(skTimers.pop()); }
+  var skStack = [];                               /* gestapelte Popups (Kanji aus der Radikal-Karte) */
+  function skClose() {
+    skStop(); if (skEl && skEl.parentNode) skEl.parentNode.removeChild(skEl); skEl = null; skCur = '';
+    if (skStack.length) {                         /* darunterliegendes Popup wieder freigeben */
+      var p = skStack.pop(); skEl = p.el; skCur = p.cur; skHost = p.host; skUndoFn = p.undo; o.skMode = p.mode; cls(skEl, 'jp-under', false);
+      if (o.skMode === 'anim' && skCur) skDraw(skCur);
+    }
+    ovl();
+  }
+  function skPush(ch) {                           /* neues Popup über dem aktuellen öffnen */
+    if (!skEl) { skOpen(ch, null); return; }
+    skStop(); skStack.push({ el: skEl, cur: skCur, host: skHost, undo: skUndoFn, mode: o.skMode });
+    cls(skEl, 'jp-under', true);                    /* verdecktes Popup ausblenden: eine Abdunklung für den ganzen Stapel */
+    skEl = null; skOpen(ch, null, true); cls(skEl, 'jp-stack', true);
+  }
+
+  /* ---- Schreibübung im Popup (ohne Wertung): blind | einrasten | geführt ---- */
+  function skResample(p, n) {
+    var d = [0], i, L, out = [], j2 = 1, k, tt, f, sg;
+    for (i = 1; i < p.length; i++) d.push(d[i - 1] + Math.sqrt(Math.pow(p[i][0] - p[i - 1][0], 2) + Math.pow(p[i][1] - p[i - 1][1], 2)));
+    L = d[d.length - 1];
+    if (p.length < 2 || L < 0.01) { for (k = 0; k < n; k++) out.push([p[0][0], p[0][1]]); return { p: out, len: 0 }; }
+    for (k = 0; k < n; k++) {
+      tt = L * k / (n - 1); while (j2 < d.length - 1 && d[j2] < tt) j2++;
+      sg = d[j2] - d[j2 - 1] || 1; f = Math.max(0, Math.min(1, (tt - d[j2 - 1]) / sg));
+      out.push([p[j2 - 1][0] + (p[j2][0] - p[j2 - 1][0]) * f, p[j2 - 1][1] + (p[j2][1] - p[j2 - 1][1]) * f]);
+    }
+    return { p: out, len: L };
+  }
+  function skDist(a, b) { return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2)); }
+  function skMatch(user, ref) {                 /* großzügig: Start, Ende, Verlauf und Länge müssen grob passen (Richtung zählt) */
+    var N = ref.p.length, u = skResample(user, N), k, sum = 0;
+    for (k = 0; k < N; k++) sum += skDist(u.p[k], ref.p[k]);
+    var avg = sum / N, st = skDist(u.p[0], ref.p[0]), en = skDist(u.p[N - 1], ref.p[N - 1]);
+    if (ref.len < 14) { var cu = [(u.p[0][0] + u.p[N - 1][0]) / 2, (u.p[0][1] + u.p[N - 1][1]) / 2], cr = [(ref.p[0][0] + ref.p[N - 1][0]) / 2, (ref.p[0][1] + ref.p[N - 1][1]) / 2]; return skDist(cu, cr) <= 15 && u.len <= 30; }
+    var ratio = u.len / ref.len;
+    return st <= 21 && en <= 23 && avg <= 15 && ratio >= 0.45 && ratio <= 2.2;
+  }
+  function skPractice(svg, ps, ghost, nums, tx, info, mode) {
+    var total = ps.length, idx = 0, miss = 0, done = false, drawing = false, pts = [], pl = null, mades = [], N = 24;
+    var user = document.createElementNS(NS, 'g'); user.setAttribute('class', 'jp-sk-user'); svg.appendChild(user);
+    var refs = ps.map(function (p) {
+      var L = 40, r = []; try { L = p.getTotalLength(); } catch (e) {}
+      for (var k = 0; k < N; k++) { var q; try { q = p.getPointAtLength(L * k / (N - 1)); } catch (e2) { q = { x: 54, y: 54 }; } r.push([q.x, q.y]); }
+      return { p: r, len: L };
+    });
+    ghost.style.display = mode === 'guide' ? '' : 'none';
+    var gps = [].slice.call(ghost.querySelectorAll('path'));
+    function mark(i) { tx.forEach(function (x, n) { cls(x, 'on', i === n); }); gps.forEach(function (g, n) { cls(g, 'nx', mode === 'guide' && i === n); }); }   /* Geführt: nächster Strich farbig wie im Schreibfeld */
+    function status() {
+      if (mode === 'blind') info.textContent = done ? t('skCmp') : (mades.length ? mades.length + ' / ' + total : t('skWrite') + ' · ' + total);
+      else info.textContent = done ? t('skDone') : t('skStroke') + ' ' + (idx + 1) + ' / ' + total;
+    }
+    if (mode === 'guide') mark(0);
+    status();
+    function pos(e) { var r = svg.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * 109, (e.clientY - r.top) / r.height * 109]; }
+    function dstr(p) { var s = 'M' + p[0][0].toFixed(1) + ' ' + p[0][1].toFixed(1); if (p.length === 1) s += ' l.01 0'; for (var i = 1; i < p.length; i++) s += 'L' + p[i][0].toFixed(1) + ' ' + p[i][1].toFixed(1); return s; }
+    function hint(i) {
+      var h = document.createElementNS(NS, 'path'); h.setAttribute('d', ps[i].getAttribute('d')); h.setAttribute('pathLength', '1'); h.setAttribute('class', 'jp-sk-hint'); svg.appendChild(h);
+      skTimers.push(setTimeout(function () { if (h.parentNode) h.parentNode.removeChild(h); }, 1500));
+    }
+    function finishStroke() {
+      drawing = false; if (!pl) return; var path = pl; pl = null;
+      if (mode === 'blind') {
+        mades.push(path); if (mades.length >= total) { done = true; ghost.style.display = ''; cls(ghost, 'ref', true); tx.forEach(function (x) { cls(x, 'on', true); }); }
+        status(); return;
+      }
+      if (skMatch(pts, refs[idx])) {
+        user.removeChild(path); var p = ps[idx]; p.style.transition = 'none'; p.style.strokeDashoffset = '1'; p.style.opacity = '1'; void p.getBoundingClientRect();
+        p.style.transition = 'stroke-dashoffset .22s ease-out'; p.style.strokeDashoffset = '0';
+        mades.push(p); idx++; miss = 0;
+        if (idx >= total) { done = true; mark(-1); } else if (mode === 'guide') mark(idx);
+        status();
+      } else {
+        cls(path, 'bad', true); skTimers.push(setTimeout(function () { if (path.parentNode) path.parentNode.removeChild(path); }, 460));
+        miss++; if (miss >= 3) { hint(idx); miss = 0; }
+      }
+    }
+    ['touchstart', 'touchmove', 'touchend'].forEach(function (n) { svg.addEventListener(n, function (e) { e.stopPropagation(); if (n !== 'touchend' && e.cancelable) e.preventDefault(); }, { passive: false }); });   /* AnkiMobile: Wisch beim Zeichnen nicht als Geste werten */
+    svg.addEventListener('pointerdown', function (e) {
+      if (done || drawing || (e.button !== undefined && e.button > 0)) return; e.preventDefault();
+      try { svg.setPointerCapture(e.pointerId); } catch (x) {}
+      pts = [pos(e)]; pl = document.createElementNS(NS, 'path'); pl.setAttribute('class', 'u'); pl.setAttribute('d', dstr(pts)); user.appendChild(pl); drawing = true;
+    });
+    svg.addEventListener('pointermove', function (e) {
+      if (!drawing || !pl) return; e.preventDefault(); var q = pos(e), l = pts[pts.length - 1];
+      if (skDist(q, l) < 0.9) return; pts.push(q); pl.setAttribute('d', dstr(pts));
+    });
+    ['pointerup', 'pointercancel'].forEach(function (n) { svg.addEventListener(n, function (e) { if (drawing) finishStroke(); }); });
+    skUndoFn = function () {
+      if (!mades.length) return;
+      var last = mades.pop();
+      if (mode === 'blind') { if (last.parentNode) last.parentNode.removeChild(last); if (done) { done = false; ghost.style.display = 'none'; cls(ghost, 'ref', false); tx.forEach(function (x) { cls(x, 'on', false); }); } }
+      else { idx = mades.length; done = false; last.style.transition = 'none'; last.style.strokeDashoffset = '1'; last.style.opacity = '0'; miss = 0; if (mode === 'guide') mark(idx); }
+      status();
+    };
+  }
+  function skDraw(ch) {
+    var chg = skCur !== ch; skStop(); skCur = ch; var kb = skEl.querySelector('.jp-ki'); if (chg || (kb && !kb.firstChild)) kiRender(ch);
+    var kwb = skEl.querySelector('.jp-kw'); if (kwb && (chg || !kwb.firstChild)) kwRender(ch);
+    [].forEach.call(skEl.querySelectorAll('.jp-skc'), function (c) {
+      var on = c.getAttribute('data-k') === ch; cls(c, 'on', on);
+      if (on) { var bar = c.parentNode; try { bar.scrollTo({ left: c.offsetLeft - (bar.clientWidth - c.offsetWidth) / 2, behavior: 'smooth' }); } catch (e) { bar.scrollLeft = c.offsetLeft - (bar.clientWidth - c.offsetWidth) / 2; } }
+    });
+    var stage = skEl.querySelector('.jp-sks'), info = skEl.querySelector('.jp-ski'); stage.innerHTML = ''; stage.className = 'jp-sks'; var skb = skEl.querySelector('.jp-skb'); if (skb) skb.hidden = false; info.textContent = '';
+    var msg = skEl.querySelector('.jp-skmode'); if (msg) msg.hidden = false;
+    var mode = o.skMode || 'anim', rpb = skEl.querySelector('.jp-skr'), unb = skEl.querySelector('.jp-sku'); skUndoFn = null;
+    if (rpb) rpb.textContent = mode === 'anim' ? '↺ ' + t('skReplay') : '⌫ ' + t('wpClear');   /* gleiche Knöpfe wie im Schreibfeld */ if (unb) unb.style.display = mode === 'anim' ? 'none' : ''; cls(stage, 'prac', mode !== 'anim');
+    var data = window.KVG ? window.KVG[ch] : null;
+    if (!data) {                                  /* Daten liegen in Dateien je 256 Zeichen (_kvg_xx.js); beim ersten Tippen nachladen */
+      var key = kvgFile(ch), st = loadedKvg[key];
+      if (st === undefined || st === 'loading') { stage.appendChild(el('div', 'jp-skm', '…')); loadF(key, function () { if (skEl && skCur === ch) skDraw(ch); }); return; }
+      stage.className = 'jp-sks empty'; if (skb) skb.hidden = true; if (msg) msg.hidden = true; stage.appendChild(el('div', 'jp-skm', st === 'err' ? t('skNoFile') : t('skMissing'))); return;
+    }
+    var svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', '0 0 109 109'); svg.setAttribute('class', 'jp-svg');
+    var cross = document.createElementNS(NS, 'path'); cross.setAttribute('d', 'M54.5 4v101M4 54.5h101'); cross.setAttribute('class', 'jp-sk-grid'); svg.appendChild(cross);
+    var ghost = document.createElementNS(NS, 'g'); ghost.setAttribute('class', 'jp-sk-ghost'); var live = document.createElementNS(NS, 'g'); live.setAttribute('class', 'jp-sk-live'); var nums = document.createElementNS(NS, 'g'); nums.setAttribute('class', 'jp-sk-nums');
+    svg.appendChild(ghost); svg.appendChild(live); svg.appendChild(nums); stage.appendChild(svg);
+    var ps = [], tx = [];
+    data.forEach(function (d, i) {
+      var g = document.createElementNS(NS, 'path'); g.setAttribute('d', d); ghost.appendChild(g);
+      var p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); p.setAttribute('pathLength', '1'); p.style.strokeDasharray = '1 2'; p.style.strokeDashoffset = '1'; p.style.opacity = '0'; live.appendChild(p); ps.push(p);
+      var pt; try { pt = p.getPointAtLength(0); } catch (e) { pt = { x: 8, y: 8 }; }
+      var x = document.createElementNS(NS, 'text'); x.setAttribute('x', Math.max(4, Math.min(105, pt.x - 3.2))); x.setAttribute('y', Math.max(7, Math.min(106, pt.y - 2.2))); x.textContent = i + 1; nums.appendChild(x); tx.push(x);
+    });
+    if (mode !== 'anim') { skPractice(svg, ps, ghost, nums, tx, info, mode); return; }
+    var at = 160, total = data.length;
+    ps.forEach(function (p, i) {
+      var len = 40; try { len = p.getTotalLength(); } catch (e) {}
+      var dur = Math.max(300, Math.min(850, len * 11));
+      skTimers.push(setTimeout(function () {
+        info.textContent = t('skStroke') + ' ' + (i + 1) + ' / ' + total; cls(p, 'cur', true); cls(tx[i], 'on', true);
+        p.style.opacity = '1'; p.style.transition = 'stroke-dashoffset ' + dur + 'ms cubic-bezier(.4,.1,.3,1)'; p.style.strokeDashoffset = '0';
+      }, at));
+      skTimers.push(setTimeout(function () { cls(p, 'cur', false); }, at + dur));
+      at += dur + 170;
+    });
+  }
+  var skHost = null;
+  function skOpen(ch, host, keep) {
+    if (!keep) { while (skStack.length) skClose(); skClose(); }
+    skHost = host; o.skMode = 'anim';             /* jedes Öffnen startet mit „Ansehen“ */
+    var list = [], seen = {}; if (host) [].forEach.call(host.querySelectorAll('.kj'), function (k) { if (!seen[k.textContent]) { seen[k.textContent] = 1; list.push(k.textContent); } });
+    if (!seen[ch]) list.unshift(ch);
+    skEl = el('div', 'jp-sk-wrap');
+    var sc = el('div', 'jp-sk-scrim'); sc.onclick = skClose; skEl.addEventListener('click', function (e) { if (e.target === skEl) skClose(); });
+    var card = el('div', 'jp-sk'); card.setAttribute('role', 'dialog'); card.setAttribute('aria-label', t('strokesLbl'));
+    var top = el('div', 'jp-skt'); var chips = el('div', 'jp-skcs');
+    list.forEach(function (c) { var b = el('button', 'jp-skc', c); b.type = 'button'; b.setAttribute('data-k', c); b.onclick = function () { setMode(0); skDraw(c); }; chips.appendChild(b); });
+    var x = el('button', 'jp-x', '✕'); x.type = 'button'; x.setAttribute('aria-label', t('close')); x.onclick = skClose;
+    top.appendChild(chips); top.appendChild(x);
+    var MODES = ['anim', 'blind', 'snap', 'guide'], mi = Math.max(0, MODES.indexOf(o.skMode));
+    var mseg = el('fieldset', 'jp-seg jp-skmode'); mseg.style.setProperty('--n', 4); mseg.style.setProperty('--i', mi);
+    var mlg = el('legend', 'jp-sr', t('skModes')); mseg.appendChild(mlg);
+    function setMode(n) {
+      var prev = +mseg.style.getPropertyValue('--i'); if (prev === n && o.skMode === MODES[n]) return;
+      mseg.setAttribute('data-dir', n > prev ? 'r' : 'l'); mseg.style.setProperty('--i', n);
+      mseg.classList.remove('go'); void mseg.offsetWidth; mseg.classList.add('go');
+      [].forEach.call(mseg.querySelectorAll('.jp-o'), function (x, k) { x.className = 'jp-o' + (k === n ? ' on' : ''); var r = x.querySelector('input'); if (r) r.checked = k === n; });
+      o.skMode = MODES[n];
+    }
+    MODES.forEach(function (m, n) {
+      var lb = el('label', 'jp-o' + (n === mi ? ' on' : '')), ip = document.createElement('input'); ip.type = 'radio'; ip.name = 'jp-skmode' + skStack.length;   /* eigene Gruppe je gestapeltem Popup */ ip.value = m; ip.className = 'jp-sr'; ip.checked = n === mi;
+      var sp = el('span', 'jp-oi', t('skM_' + m));
+      ip.addEventListener('change', function () { setMode(n); if (skCur) skDraw(skCur); });
+      lb.appendChild(ip); lb.appendChild(sp); mseg.appendChild(lb);
+    });
+    var kib = el('div', 'jp-ki'); kib.hidden = true; var kwb = el('div', 'jp-kw'); kwb.hidden = true;
+    var stage = el('div', 'jp-sks'); stage.onclick = function () { if (skCur && o.skMode === 'anim') skDraw(skCur); };
+    var bot = el('div', 'jp-skb'); var info = el('span', 'jp-ski');
+    var rp = el('button', 'btn jp-skr', '↺ ' + t('skReplay')); rp.type = 'button'; rp.onclick = function () { if (skCur) skDraw(skCur); };
+    var un = el('button', 'btn jp-sku', '↶ ' + t('wpUndo')); un.type = 'button'; un.onclick = function () { if (skUndoFn) skUndoFn(); };
+    var bw = el('span', 'jp-skbw'); bw.appendChild(un); bw.appendChild(rp);
+    bot.appendChild(info); bot.appendChild(bw);
+    card.appendChild(top); card.appendChild(mseg); card.appendChild(stage); card.appendChild(bot); card.appendChild(kib); card.appendChild(kwb);
+    skEl.appendChild(sc); skEl.appendChild(card); root.appendChild(skEl); noGesture(skEl); ovl();
+    skDraw(ch);
+  }
+  root.addEventListener('click', function (e) {
+    var k = e.target && e.target.closest ? e.target.closest('.kj') : null;
+    if (!k || !o.strokes || root.classList.contains('jp-open')) return;
+    var host = k.closest('.jp'); if (host) skOpen(k.textContent, host);
+  });
+
+  /* ---- Wort schreiben (Recall): Laufband mit allen Zeichen + großes Feld, Zeichen für Zeichen, ohne Wertung ----
+     Modi wie im Popup: Ansehen | Blind | Einrasten | Geführt. Die Strichzahl je Zeichen kommt aus KanjiVG:
+     nach dem letzten Strich geht es automatisch zum nächsten Kästchen. Satzzeichen werden übersprungen, Kana optional vorgegeben. */
+  var wpEl = null, wpS = null, wpT = 0, wpTm = [], WP_MODES = ['anim', 'blind', 'snap', 'guide'];
+  var WP_SKIP = /[\s、。，．,.・･～〜（）()「」『』［］\[\]【】〈〉《》！？!?:;：；…‥\/／\-－]/, WP_KANA = /[぀-ヿ]/;
+  function wpChars() {
+    var e = document.getElementById('w-ex'); if (!e) return [];
+    var w = (e.textContent || '').replace(/\s+/g, ' ').trim(); if (!/[぀-ヿ㐀-鿿豈-﫿々]/.test(w)) return [];
+    return w.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[\s\S]/g) || [];
+  }
+  function wpGiven(c) { return WP_SKIP.test(c) || (WP_KANA.test(c) && (o.wpKana || (!!wpS && wpFB() && (wpS.help || 0) >= 2))); }
+  function wpData(c) { return window.KVG ? window.KVG[c] : null; }
+  function wpFam(m) { return m === 'blind' ? 'free' : 'snap'; }
+  function wpBack() { return !!document.getElementById('jp-back'); }
+  function wpModes() { return wpBack() ? WP_MODES : ['blind', 'snap']; }   /* Vorderseite: nichts, was die Lösung zeigt (Ansehen, Geführt) */
+  function wpMode() { var m = WP_MODES.indexOf(o.wpMode) < 0 ? 'blind' : o.wpMode; if (wpModes().indexOf(m) < 0) m = m === 'guide' ? 'snap' : 'blind'; return m; }
+  function wpFB() { return !wpBack() && wpMode() === 'blind'; }   /* Vorderseite + Blind: nichts verraten */
+  function wpHelpLv() { return Math.max(wpS && wpS.help || 0, o.wpKana ? 2 : 0); }   /* 0 nichts · 1 Länge · 2 Kana · 3 Vorlage */
+  function wpOpenStrip() { return wpFB() && wpHelpLv() < 1; }   /* offenes Laufband: Kästchen erscheinen erst beim Weitergehen */
+  function wpAllDone(S) { return S.c.every(function (c) { var d = wpData(c.ch); return c.x || wpGiven(c.ch) || (d && c.st.length >= d.length); }); }
+  function wpReduce() { try { return window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } }
+  function wpStop() { clearTimeout(wpT); while (wpTm.length) clearTimeout(wpTm.pop()); }
+  function wpSvg(cl) { var v = document.createElementNS(NS, 'svg'); v.setAttribute('viewBox', '0 0 109 109'); if (cl) v.setAttribute('class', cl); return v; }
+  function wpPath(d, cl) { var p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); if (cl) p.setAttribute('class', cl); return p; }
+  function wpMini(i, sol) {                       /* kleine Zelle: eigene Striche, vorgegebenes Zeichen oder Lösung */
+    var c = wpS.c[i], b = el('span', 'jp-wpm');
+    if (c.ch === ' ') { b.className += ' sp'; return b; }
+    if (WP_SKIP.test(c.ch)) { b.className += ' sk'; b.textContent = c.ch; return b; }
+    if (!sol && wpGiven(c.ch) && !c.st.length) { b.className += ' gv'; b.textContent = c.ch; return b; }   /* vorgegebene Kana: Text, außer man hat sie trotzdem geschrieben */
+    var v = wpSvg(); if (sol) { var d = wpData(c.ch); if (d) d.forEach(function (x) { v.appendChild(wpPath(x, 's')); }); else { b.className += ' gv sol'; b.textContent = c.ch; return b; } }
+    else {
+      if (wpS.rev) { var dr = wpData(c.ch); if (dr) dr.forEach(function (x) { v.appendChild(wpPath(x, 'r')); }); }   /* Blind am Ende: Original blass dahinter */
+      c.st.forEach(function (x) { v.appendChild(wpPath(x, 'u')); });
+    }
+    b.appendChild(v);
+    if (c.miss && wpFam(wpMode()) === 'snap') b.appendChild(el('i', 'jp-wpms', String(c.miss)));
+    return b;
+  }
+  function wpNextIdx(i, dir) { for (var j = i + dir; j >= 0 && j < wpS.c.length; j += dir) if (!wpGiven(wpS.c[j].ch)) return j; return -1; }
+  function wpRender() {
+    if (!wpEl) return; var S = wpS, card = wpEl.querySelector('.jp-wp'); wpStop(); wpKeep();
+    var mode = wpMode(), MS = wpModes();
+    if (mode === 'blind' && wpBack() && !S.rev && wpAllDone(S)) S.rev = true;   /* vorne fertig geschrieben: hinten gleich mit Lösung */
+    var todo = S.c.filter(function (c) { return !c.x && !wpGiven(c.ch); }).length, pos = 0, i, open = wpOpenStrip(), fb = wpFB();
+    for (i = 0; i <= S.i && i < S.c.length; i++) if (!S.c[i].x && !wpGiven(S.c[i].ch)) pos++;
+    var allDone = wpAllDone(S);
+    card.querySelector('.jp-wpl').textContent = S.rev && mode === 'blind' ? t('skCmp') + (S.help ? ' · ' + t('wpHelped') : '') : open ? t('wpOpen') : S.c[S.i] && S.c[S.i].x ? t('wpOpen') + ' · ' + t('wpExtra') : S.c[S.i] && wpGiven(S.c[S.i].ch) ? t('wpOpen') + ' · ' + t('wpOpt') : (allDone && mode !== 'blind' && mode !== 'anim' ? t('skDone') : allDone && mode === 'blind' && !wpBack() ? t('wpFlip') : t('wpOpen') + ' · ' + t('wpChar') + ' ' + Math.max(1, pos) + ' / ' + todo);
+    var body = card.querySelector('.jp-wpbody');
+    var oldF = body.querySelector('.jp-wpf'), oldS = body.querySelector('.jp-wps'), sl0 = oldS ? oldS.scrollLeft : null;   /* für die Gleit-Animation */
+    var dir = (S.pi == null || S.pi === S.i) ? 0 : (S.i > S.pi ? 1 : -1); S.pi = S.i;
+    body.innerHTML = '';
+    /* Modus (wie im Popup) */
+    var mi = MS.indexOf(mode), seg = el('fieldset', 'jp-seg jp-skmode jp-wpmode'), from = S.segFrom; S.segFrom = null; seg.style.setProperty('--n', MS.length);
+    seg.style.setProperty('--i', from != null && from !== mi && !wpReduce() ? from : mi);
+    if (from != null && from !== mi && !wpReduce()) { var raf = window.requestAnimationFrame || function (f) { return setTimeout(f, 16); }; raf(function () { raf(function () { seg.setAttribute('data-dir', mi > from ? 'r' : 'l'); seg.style.setProperty('--i', mi); seg.classList.add('go'); }); }); }   /* wie in den Einstellungen gleiten */
+    seg.appendChild(el('legend', 'jp-sr', t('skModes')));
+    MS.forEach(function (m, n) {
+      var lb = el('label', 'jp-o' + (n === mi ? ' on' : '')), ip = document.createElement('input'); ip.type = 'radio'; ip.name = 'jp-wpmode'; ip.className = 'jp-sr'; ip.checked = n === mi;
+      ip.addEventListener('change', function () { wpSetMode(m, n > mi ? 'r' : 'l'); });
+      lb.appendChild(ip); lb.appendChild(el('span', 'jp-oi', t('skM_' + m))); seg.appendChild(lb);
+    });
+    body.appendChild(seg);
+    var strip = el('div', 'jp-wps'); if (open) S.far = Math.max(S.far || 0, S.i);
+    var cellOf = function (i) { return strip.querySelector('[data-i="' + i + '"]'); };
+    S.c.forEach(function (c, n) {
+      if (open && (WP_SKIP.test(c.ch) || n > S.far)) return;              /* offenes Band: nur erreichte Zeichen, keine Satzzeichen */
+      if (!open && c.x && !c.st.length && n !== S.i) return;               /* leere Zusatzkästchen weglassen */
+      var m = wpMini(n, mode === 'anim'); m.setAttribute('data-i', n); if (n === S.i) m.className += ' on';   /* Ansehen: Laufband zeigt gleich alle Zeichen */
+      if (c.x && wpBack()) m.className += ' xt';                            /* hinten: mehr Zeichen geschrieben als das Wort hat */
+      if (!WP_SKIP.test(c.ch)) { m.className += ' go'; m.onclick = function () { S.i = n; wpRender(); }; }   /* auch vorgegebene Kana antippbar (freiwillig) */
+      strip.appendChild(m);
+    });
+    body.appendChild(strip);
+    var cur = S.c[S.i] || { ch: '', st: [], miss: 0 }, data = wpData(cur.ch);
+    var f = el('div', 'jp-wpf'), v = wpSvg('jp-svg jp-wpv' + (mode === 'anim' ? ' anim' : '')); v.appendChild(wpPath('M54.5 4v101M4 54.5h101', 'jp-sk-grid'));
+    var tpl = document.createElementNS(NS, 'g'); tpl.setAttribute('class', 'jp-wpt' + (mode === 'guide' || (fb && wpHelpLv() >= 3) ? ' on' : '') + (mode === 'blind' && S.rev ? ' ref' : '')); v.appendChild(tpl);
+    var tps = (data || []).map(function (x) { var p = wpPath(x); tpl.appendChild(p); return p; });
+    var live = document.createElementNS(NS, 'g'); live.setAttribute('class', 'jp-sk-live'); v.appendChild(live);
+    var ug = document.createElementNS(NS, 'g'); v.appendChild(ug);
+    var ng = document.createElementNS(NS, 'g'); ng.setAttribute('class', 'jp-sk-nums'); v.appendChild(ng);   /* Strichnummern wie im Popup */
+    var tns = tps.map(function (p, n) { var pt; try { pt = p.getPointAtLength(0); } catch (e) { pt = { x: 8, y: 8 }; } var x = document.createElementNS(NS, 'text'); x.setAttribute('x', Math.max(4, Math.min(105, pt.x - 3.2))); x.setAttribute('y', Math.max(7, Math.min(106, pt.y - 2.2))); x.textContent = n + 1; ng.appendChild(x); return x; });
+    if (mode !== 'anim') cur.st.forEach(function (x) { ug.appendChild(wpPath(x, 'u')); });
+    f.appendChild(v); var hold = el('div', 'jp-wpfh'); hold.appendChild(f); body.appendChild(hold);
+    if (dir && oldF && !wpReduce()) {               /* Zeichenwechsel: altes Feld gleitet raus, neues rein */
+      oldF.className += ' gone'; oldF.style.animation = 'jp-wpout' + (dir > 0 ? 'l' : 'r') + ' .28s cubic-bezier(.3,.7,.2,1) forwards'; hold.appendChild(oldF);
+      f.style.animation = 'jp-wpin' + (dir > 0 ? 'r' : 'l') + ' .28s cubic-bezier(.3,.7,.2,1)';
+      setTimeout(function () { if (oldF.parentNode) oldF.parentNode.removeChild(oldF); f.style.animation = ''; }, 320);
+    }
+    if (!data && !WP_SKIP.test(cur.ch)) { var key = kvgFile(cur.ch); if (loadedKvg[key] === undefined || loadedKvg[key] === 'loading') loadF(key, function () { if (wpEl && wpS === S && S.c[S.i] === cur) wpRender(); }); }
+    var snap = (mode === 'snap' || mode === 'guide') && data;
+    function mark() { tps.forEach(function (p, n) { cls(p, 'nx', mode === 'guide' && n === cur.st.length); cls(tns[n], 'on', mode === 'guide' && n === cur.st.length); }); }
+    if (mode === 'anim') {                        /* Ansehen: Strichfolge des aktuellen Zeichens */
+      var play = function () {
+        wpStop(); live.innerHTML = ''; tns.forEach(function (x) { cls(x, 'on', false); }); var at = 120;
+        (data || []).forEach(function (d, n) {
+          var p = wpPath(d); p.setAttribute('pathLength', '1'); p.style.strokeDasharray = '1 2'; p.style.strokeDashoffset = '1'; p.style.opacity = '0'; live.appendChild(p);
+          var len = 40; try { len = p.getTotalLength(); } catch (e) {}
+          var dur = Math.max(300, Math.min(850, len * 11));
+          wpTm.push(setTimeout(function () { cls(p, 'cur', true); if (tns[n]) cls(tns[n], 'on', true); p.style.opacity = '1'; p.style.transition = 'stroke-dashoffset ' + dur + 'ms cubic-bezier(.4,.1,.3,1)'; p.style.strokeDashoffset = '0'; }, at));
+          wpTm.push(setTimeout(function () { cls(p, 'cur', false); }, at + dur)); at += dur + 170;
+        });
+        var nx = wpNextIdx(S.i, 1);                 /* danach automatisch zum nächsten Zeichen (beim letzten bleibt es stehen) */
+        if (o.wpAuto && data && nx >= 0) wpTm.push(setTimeout(function () { if (wpS === S) { S.i = nx; wpRender(); } }, at + 450));
+      };
+      f.onclick = play; if (data) play(); else if (cur.ch) { var tx = document.createElementNS(NS, 'text'); tx.setAttribute('x', '54.5'); tx.setAttribute('y', '58'); tx.setAttribute('class', 'jp-wptx'); tx.textContent = cur.ch; v.appendChild(tx); }
+    } else {
+      mark();
+      var refs = null, run = 0;
+      var getRefs = function () {
+        if (refs) return refs;
+        refs = tps.map(function (p) { var L = 40, r = [], N = 24; try { L = p.getTotalLength(); } catch (e) {} for (var k = 0; k < N; k++) { var q; try { q = p.getPointAtLength(L * k / (N - 1)); } catch (e2) { q = { x: 54, y: 54 }; } r.push([q.x, q.y]); } return { p: r, len: L }; });
+        return refs;
+      };
+      var drawing = false, pts = [], pl = null;
+      var pos2 = function (e) { var r = v.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * 109, (e.clientY - r.top) / r.height * 109]; };
+      var ds = function (p) { var q = 'M' + p[0][0].toFixed(1) + ' ' + p[0][1].toFixed(1); if (p.length === 1) q += ' l.01 0'; for (var k = 1; k < p.length; k++) q += 'L' + p[k][0].toFixed(1) + ' ' + p[k][1].toFixed(1); return q; };
+      var mini = function () { var mi2 = cellOf(S.i); if (mi2) { var nm = wpMini(S.i, false); nm.className = mi2.className; nm.onclick = mi2.onclick; strip.replaceChild(nm, mi2); } };
+      var done = function () { return data && cur.st.length >= data.length; };
+      ['touchstart', 'touchmove', 'touchend'].forEach(function (n) { v.addEventListener(n, function (e) { e.stopPropagation(); if (n !== 'touchend' && e.cancelable) e.preventDefault(); }, { passive: false }); });
+      v.addEventListener('pointerdown', function (e) {
+        if (drawing || (e.button !== undefined && e.button > 0) || (snap && done())) return; e.preventDefault(); clearTimeout(wpT);
+        try { v.setPointerCapture(e.pointerId); } catch (x) {}
+        pts = [pos2(e)]; pl = wpPath(ds(pts), 'u'); ug.appendChild(pl); drawing = true;
+      });
+      v.addEventListener('pointermove', function (e) { if (!drawing || !pl) return; e.preventDefault(); var q = pos2(e), l = pts[pts.length - 1]; if (skDist(q, l) < 0.9) return; pts.push(q); pl.setAttribute('d', ds(pts)); });
+      ['pointerup', 'pointercancel'].forEach(function (n) { v.addEventListener(n, function () {
+        if (!drawing) return; drawing = false; var path = pl; pl = null;
+        if (!snap) {
+          cur.st.push(path.getAttribute('d')); mini(); wpKeep();
+          if (fb) return;                               /* vorne Blind: nicht nach Strichzahl weiter (verrät sie) – Weiter-Knopf */
+          if (done() && !S.rev) {
+            if (wpNextIdx(S.i, 1) >= 0) { if (o.wpAuto) wpT = setTimeout(wpNext, 300); }
+            else if (wpAllDone(S)) wpT = setTimeout(function () { if (wpBack()) wpFinish(); else wpRender(); }, 300);   /* Wort fertig: hinten Lösung dahinter, vorne nur Hinweis */
+          }
+          return;
+        }
+        var k = cur.st.length;
+        if (skMatch(pts, getRefs()[k])) {            /* richtiger Strich rastet ein */
+          ug.removeChild(path); var p = wpPath(data[k], 'u ok'); p.setAttribute('pathLength', '1'); ug.appendChild(p);
+          cur.st.push(data[k]); run = 0; mark(); mini(); wpKeep();
+          if (done()) { cls(f, 'fin', true); if (o.wpAuto && wpNextIdx(S.i, 1) >= 0) wpT = setTimeout(wpNext, 450); else if (wpNextIdx(S.i, 1) < 0) wpRender(); }
+        } else {                                      /* falscher verschwindet; nach 3 Fehlversuchen blinkt der richtige */
+          cls(path, 'bad', true); wpTm.push(setTimeout(function () { if (path.parentNode) path.parentNode.removeChild(path); }, 460));
+          cur.miss = (cur.miss || 0) + 1; run++;
+          if (run >= 3) { run = 0; var h = wpPath(data[k], 'jp-sk-hint'); h.setAttribute('pathLength', '1'); v.appendChild(h); wpTm.push(setTimeout(function () { if (h.parentNode) h.parentNode.removeChild(h); }, 1500)); }
+        }
+      }); });
+    }
+    var bar = el('div', 'jp-wpbar');
+    function b(lbl, fn, c, aria) { var x = el('button', 'btn' + (c ? ' ' + c : ''), lbl); x.type = 'button'; x.onclick = fn; if (aria) { x.setAttribute('aria-label', aria); x.title = aria; } bar.appendChild(x); return x; }
+    var ub = b(fb ? '↶' : '↶ ' + t('wpUndo'), wpUndo, fb ? 'ic' : '', t('wpUndo')); var nb = b(fb ? '⌫' : '⌫ ' + t('wpClear'), wpReset, fb ? 'ic' : '', t('wpClear'));
+    if (mode === 'anim') { ub.disabled = true; nb.disabled = true; }
+    var last = wpNextIdx(S.i, 1) < 0;
+    /* sonst kein Weiter-Knopf: es geht automatisch weiter, sonst über das Laufband; vorne in Blind: Weiter-Knopf */
+    if (fb) { b('↺', wpAgain, 'ic', t('wpAgain')); b(t('wpNext') + ' ›', wpNext, 'pri'); }
+    else b('↺ ' + t('wpAgain'), wpAgain, (mode === 'anim' ? last : (S.rev || allDone)) ? 'pri' : '');
+    body.appendChild(bar);
+    var opt = el('div', 'jp-wpo');
+    if (fb) {                                       /* vorne Blind: Hilfe statt „Automatisch weiter“ – zeigt stufenweise Länge, Kana, Vorlage */
+      var lv = wpHelpLv(), hs = ['wpHLen', 'wpHKana', 'wpHTpl'];
+      var hb = el('button', 'btn jp-wpq hl' + (lv ? ' on' : ''), lv >= 3 ? t('wpHelp') + ' ✓' : t('wpHelp') + ': ' + t(hs[lv])); hb.type = 'button'; hb.disabled = lv >= 3; hb.onclick = wpHelp;
+      opt.appendChild(hb);
+    }
+    [['wpAuto', 'wpAuto'], ['wpKana', 'wpKana']].forEach(function (q) {
+      if (fb && q[0] === 'wpAuto') return;
+      var off = !fb && q[0] === 'wpKana' && !S.c.some(function (c) { return WP_KANA.test(c.ch) && !WP_SKIP.test(c.ch); });   /* Wort ohne Kana: ausgegraut, aus (vorne in Blind nicht – würde es verraten) */
+      var x = el('button', 'btn jp-wpq' + (o[q[0]] && !off ? ' on' : ''), t(q[1])); x.type = 'button'; x.setAttribute('aria-pressed', !!o[q[0]] && !off); x.disabled = off;
+      x.onclick = function () { o[q[0]] = !o[q[0]]; save(); wpRender(); };
+      opt.appendChild(x);
+    });
+    body.appendChild(opt);
+    var on = cellOf(S.i);
+    if (on) {                                       /* Laufband gleitet zum aktuellen Zeichen, Markierung wandert mit */
+      var tgt = Math.max(0, on.offsetLeft - strip.clientWidth / 2 + on.offsetWidth / 2), ind = el('span', 'jp-wpind'); strip.appendChild(ind);
+      var x1 = on.offsetLeft, x0 = S.ix == null ? x1 : S.ix; S.ix = x1;
+      ind.style.top = on.offsetTop + 'px'; ind.style.width = on.offsetWidth + 'px'; ind.style.height = on.offsetHeight + 'px';
+      if (wpReduce() || x0 === x1) { ind.style.transform = 'translateX(' + x1 + 'px)'; if (sl0 != null) strip.scrollLeft = sl0; strip.scrollLeft = tgt; }
+      else {
+        ind.style.transform = 'translateX(' + x0 + 'px)'; void ind.offsetWidth; ind.style.transition = 'transform .28s cubic-bezier(.3,.7,.2,1)'; ind.style.transform = 'translateX(' + x1 + 'px)';
+        var from = sl0 == null ? tgt : sl0, t0 = Date.now(); strip.scrollLeft = from;
+        (function step() { var k = Math.min(1, (Date.now() - t0) / 280), e = 1 - Math.pow(1 - k, 3); strip.scrollLeft = from + (tgt - from) * e; if (k < 1) (window.requestAnimationFrame || setTimeout)(step, 16); })();
+      }
+    }
+    tapAll();
+  }
+  function wpHelp() {
+    if (!wpS || !wpFB()) return; var lv = wpHelpLv(); if (lv >= 3) return; wpS.help = lv + 1;
+    if (wpS.help === 1) {                           /* Länge zeigen: leere Zusatzkästchen weg */
+      wpS.c = wpS.c.filter(function (c) { return !c.x || c.st.length; });
+      if (!wpS.c[wpS.i] || (wpS.c[wpS.i].x && !wpS.c[wpS.i].st.length)) wpS.i = Math.max(0, wpNextIdx(-1, 1));
+    }
+    wpRender();
+  }
+  function wpSetMode(m, dir) {
+    if (!wpS || wpMode() === m) return;
+    var og = wpEl && wpEl.querySelector('.jp-wpmode'); wpS.segFrom = og ? +og.style.getPropertyValue('--i') : null;   /* Pille soll von hier aus gleiten */
+    wpS.c = wpS.c.filter(function (c) { return !c.x; }); wpS.far = 0;
+    wpS.c.forEach(function (c) { c.st = []; c.miss = 0; }); wpS.i = Math.max(0, wpNextIdx(-1, 1)); wpS.rev = false; wpS.fam = wpFam(m); wpS.pi = null;   /* jeder Moduswechsel: Feld leer, von vorn */
+    o.wpMode = m; save(); wpRender();
+  }
+  function wpUndo() { if (!wpS || wpMode() === 'anim') return; wpStop(); var c = wpS.c[wpS.i]; if (c && c.st.length) { c.st.pop(); wpRender(); } else { var j = wpNextIdx(wpS.i, -1); if (j >= 0) { wpS.i = j; wpRender(); } } }
+  function wpReset() { if (!wpS || wpMode() === 'anim') return; var c = wpS.c[wpS.i]; if (c) { c.st = []; c.miss = 0; } wpRender(); }
+  function wpNext() {
+    if (!wpS) return; wpStop(); var j = wpNextIdx(wpS.i, 1), c = wpS.c[wpS.i];
+    if (j < 0 && wpOpenStrip() && !(c && c.x && !c.st.length)) { wpS.c.push({ ch: '', st: [], miss: 0, x: true }); j = wpS.c.length - 1; }   /* offenes Band: Weiter geht immer weiter – verrät die Länge nicht */
+    if (j >= 0) { wpS.i = j; wpRender(); } else if (wpBack()) wpFinish(); else wpRender();
+  }
+  function wpAgain() {                            /* ganzes Wort von vorn (Ansehen: nur zurück zum ersten Zeichen) */
+    if (!wpS) return; wpStop();
+    if (wpMode() !== 'anim') { wpS.c = wpS.c.filter(function (c) { return !c.x; }); wpS.far = 0; wpS.c.forEach(function (c) { c.st = []; c.miss = 0; }); wpS.rev = false; }
+    wpS.i = Math.max(0, wpNextIdx(-1, 1)); wpRender();
+  }
+  function wpFinish() {                           /* hinten in Blind: Lösung blass hinter allen Zeichen zeigen */
+    if (!wpS) return; wpStop();
+    if (wpMode() === 'blind' && wpBack() && !wpS.rev) { wpS.rev = true; wpRender(); }   /* vorne keine Lösung */
+  }
+  function wpKeep() { if (!wpS) return; window.__jpWp = wpS; try { sessionStorage.setItem('jp_wp', JSON.stringify(wpS)); } catch (e) {} }   /* Geschriebenes bleibt beim Umdrehen erhalten */
+  function wpLoad(w) {
+    var x = window.__jpWp; if (x && x.w === w) return x;
+    try { x = JSON.parse(sessionStorage.getItem('jp_wp') || 'null'); if (x && x.w === w && x.c) return x; } catch (e) {}
+    return null;
+  }
+  function wpOpen() {
+    var cs = wpChars(); if (!cs.length) return; if (wpEl) wpClose(); if (skEl) skClose();
+    if (!wpS || wpS.w !== cs.join('')) wpS = wpLoad(cs.join('')) || wpS;
+    if (!wpS || wpS.w !== cs.join('')) o.wpMode = 'blind';   /* neues Wort: immer mit Blind beginnen (Wechsel gilt nur für dieses Wort) */
+    if (!wpS || wpS.w !== cs.join('')) wpS = { w: cs.join(''), c: cs.map(function (c) { return { ch: c, st: [], miss: 0 }; }), i: 0, rev: false, fam: wpFam(wpMode() === 'anim' ? 'blind' : wpMode()) };
+    if (wpBack()) { wpS.c = wpS.c.filter(function (c) { return !c.x || c.st.length; }); if (!wpS.c[wpS.i]) wpS.i = 0; }   /* hinten: leere Zusatzkästchen weg */
+    if (wpGiven(wpS.c[wpS.i].ch)) { var j = wpNextIdx(wpS.i, 1); if (j < 0) { o.wpKana = false; j = wpNextIdx(-1, 1); } wpS.i = Math.max(0, j); }
+    wpEl = el('div', 'jp-wp-wrap'); wpEl.addEventListener('click', function (e) { if (e.target === wpEl) wpClose(); });
+    var card = el('div', 'jp-wp'); card.setAttribute('role', 'dialog'); card.setAttribute('aria-label', t('wpOpen'));
+    var hd = el('div', 'jp-wph'), tt = el('div', 'jp-wpht'); tt.appendChild(el('small', 'jp-wpl'));
+    var mean = el('b'); mean.innerHTML = pick('m'); tt.appendChild(mean); hd.appendChild(tt);
+    var x = el('button', 'jp-x', '✕'); x.type = 'button'; x.setAttribute('aria-label', t('close')); x.onclick = wpClose; hd.appendChild(x);
+    card.appendChild(hd); card.appendChild(el('div', 'jp-wpbody')); wpEl.appendChild(card); root.appendChild(wpEl);   /* innerhalb der Karte: gleiche Glas-/Button-Stile wie das Kanji-Popup */
+    wpS.pi = null; wpS.ix = null; noGesture(wpEl); ovl();
+    var keys = {}; wpS.c.forEach(function (c) { if (!WP_SKIP.test(c.ch) && !wpData(c.ch)) keys[kvgFile(c.ch)] = 1; });
+    Object.keys(keys).forEach(function (k) { loadF(k, function () { if (wpEl) wpRender(); }); });
+    wpRender();
+  }
+  function wpClose() { wpKeep(); wpStop(); if (wpEl && wpEl.parentNode) wpEl.parentNode.removeChild(wpEl); wpEl = null; ovl(); }
+  function wpKey(e) {
+    var k = e.key; if (e.ctrlKey || e.metaKey || e.altKey) return false;
+    var kl = k.length === 1 ? k.toLowerCase() : k;
+    if (k === 'Escape' || kl === 'w') { wpClose(); }   /* W öffnet und schließt (wie K und P) */
+    else if (k === 'ArrowRight') wpNext(); else if (k === 'ArrowLeft') { var j = wpNextIdx(wpS.i, -1); if (j >= 0) { wpS.i = j; wpRender(); } }
+    else if (k === 'Backspace') wpUndo(); else if (kl === 'n') wpReset(); else if (kl === 'h') wpHelp();
+    else if (k === 'ArrowUp' || k === 'ArrowDown') { var MS = wpModes(), mi = MS.indexOf(wpMode()); wpSetMode(MS[(mi + (k === 'ArrowDown' ? 1 : MS.length - 1)) % MS.length], k === 'ArrowDown' ? 'r' : 'l'); }
+    else return true;                               /* andere Tasten im Schreibfeld schlucken (keine Anki-Kürzel) */
+    e.preventDefault(); return true;
+  }
+  if (!document.getElementById('jp-back')) { window.__jpWp = null; try { sessionStorage.removeItem('jp_wp'); } catch (e) {} }   /* jede Vorderseite beginnt leer */
+  (function () { var b = document.getElementById('jp-wpb'); if (b) b.addEventListener('click', function (e) { e.stopPropagation(); wpOpen(); }); })();
+  /* Tasten: auf window in der Capture-Phase, damit wir vor Ankis eigenem Esc-Handler drankommen.
+     Anki schickt bei Esc sonst „close“ und nimmt der Karte den Tastaturfokus → danach gingen K/P/W nicht mehr.
+     Beim Kartenwechsel läuft dieses Skript neu: alten Handler vorher entfernen. */
+  function handled(e) {
+    e.preventDefault(); e.stopPropagation();
+    var a = document.activeElement;                 /* Fokus von angeklickten Schaltern lösen, sonst bleibt ein Fokusring stehen */
+    if (a && a !== document.body && root.contains(a) && a.blur) a.blur();
+  }
+  if (window.__jpKey) window.removeEventListener('keydown', window.__jpKey, true);
+  window.__jpKey = function (e) {
+    if (wpEl) { if (wpKey(e)) { if (e.defaultPrevented) handled(e); return; } }
+    if (e.key === 'Escape') { if (skEl) { skClose(); handled(e); } else if (root.classList.contains('jp-open')) { close(); handled(e); } else e.stopPropagation(); return; }   /* Esc nie an Anki weiterreichen: Anki würde der Karte den Fokus nehmen */
+    if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+    var tg = e.target; if (tg && (/^(TEXTAREA|SELECT)$/.test(tg.tagName) || (tg.tagName === 'INPUT' && !/^(radio|checkbox|button)$/.test(tg.type)) || tg.isContentEditable)) return;
+    var k = e.key.length === 1 ? e.key.toLowerCase() : e.key, did = true;
+    if (skEl) {
+      var cs = [].slice.call(skEl.querySelectorAll('.jp-skc')), ci = -1; cs.forEach(function (c, i) { if (c.classList.contains('on')) ci = i; });
+      var seg = skEl.querySelector('.jp-skmode'), segOn = seg && !seg.hidden;
+      if (k === 'ArrowLeft' || k === 'ArrowRight') { var ni = ci + (k === 'ArrowRight' ? 1 : -1); if (ni >= 0 && ni < cs.length) cs[ni].click(); }
+      else if ((k === 'ArrowUp' || k === 'ArrowDown') && segOn) { var ls = seg.querySelectorAll('.jp-o'), mi = 0; [].forEach.call(ls, function (x, i) { if (x.classList.contains('on')) mi = i; }); ls[(mi + (k === 'ArrowDown' ? 1 : ls.length - 1)) % ls.length].click(); }
+      else if (k === 'n' && segOn) { var rb = skEl.querySelector('.jp-skr'); if (rb) rb.click(); }
+      else if (k === 'Backspace' && segOn) { var ub = skEl.querySelector('.jp-sku'); if (ub && ub.style.display !== 'none') ub.click(); }
+      else if (k === 'k') { while (skStack.length) skClose(); skClose(); }   /* K öffnet und schließt (alle Stufen) */
+      else did = false;
+    } else if (root.classList.contains('jp-open')) { if (k === 'p') close(); else did = false; }
+    else if (k === 'p') open();
+    else if (k === 'k' && o.strokes) { var kj = [].filter.call(root.querySelectorAll('.kj'), function (x) { return x.offsetParent; })[0]; if (kj) skOpen(kj.textContent, kj.closest('.jp')); else did = false; }
+    else if (k === 'l' && btn && btn.style.display !== 'none') btn.click();   /* nur Tasten, die Anki selbst nicht belegt (geprüft am Anki-Quellcode) */
+    else if (k === 'w' && MODE === 'recall' && o.writePad && wpChars().length) wpOpen();
+    else did = false;
+    if (did) handled(e);
+  };
+  window.addEventListener('keydown', window.__jpKey, true);
+  wrapKanji();
+  load(); apply(); ovl();
+  /* Anki setzt beim Kartenwechsel body.className neu und löscht dabei unsere Klassen (jp-light/jp-dark …):
+     dann würde die Karte kurz im Systemdesign erscheinen. Beobachten und sofort wieder herstellen. */
+  function looksOK() {
+    var b = document.body;
+    return b.classList.contains('jp-light') === (o.theme === 'light') && b.classList.contains('jp-dark') === (o.theme === 'dark') &&
+           b.classList.contains('jp-desans') === (o.deFont === 'sans') && b.classList.contains('jp-left') === (o.align === 'left') &&
+           b.classList.contains('jp-nofuri') === !(o.furi || o.romaji) && b.classList.contains('jp-romaji') === !!o.romaji && b.classList.contains('jp-nochips') === !o.chips && b.classList.contains('jp-nostroke') === !o.strokes && b.classList.contains('jp-nowr') === !o.writeList;
+  }
+  try {
+    if (window.__jpMO) window.__jpMO.disconnect();
+    if (window.MutationObserver) {
+      window.__jpMO = new MutationObserver(function () { if (!looksOK()) apply(); });   /* Microtask: noch vor dem nächsten Zeichnen */
+      window.__jpMO.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    }
+  } catch (e) {}
+})();
+</script>

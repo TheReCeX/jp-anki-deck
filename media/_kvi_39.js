@@ -1,0 +1,2 @@
+/* KANJIDIC2 (c) EDRDG, CC BY-SA 4.0 - https://www.edrdg.org/wiki/index.php/KANJIDIC_Project ; Bestandteile aus KanjiVG (CC BY-SA 3.0) */
+(function(d){var K=window.KVI=window.KVI||{};for(var k in d)K[k]=d[k];})({"㤗":[9,0,0,61,[],[],[],[]],"㤚":[10,0,0,61,[],[],["joy","delight","gratification"],[]],"㥯":[14,0,0,61,[],[],["careful","compassionate","to take an interest in","prudent","cautious","worried and grieved"],[]]});

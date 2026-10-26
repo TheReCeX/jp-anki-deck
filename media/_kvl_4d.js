@@ -1,0 +1,2 @@
+/* KANJIDIC2 (c) EDRDG, CC BY-SA 4.0: Bedeutungen ins Deutsche übertragen; Radikal-Form/Position aus KanjiVG (CC BY-SA 3.0), Lücken aus BabelStone IDS (Andrew West); JLPT-Stufen inoffiziell nach Jonathan Waller (tanos.co.uk, CC BY) */
+(function(d){var K=window.KVX=window.KVX||{};for(var k in d)K[k]=d[k];})({"䴇":[["Zweitname für Kranich","kleiner Schwan","Zweitname für Bachstelze"],"鳥","r",0,"零鳥"],"䵷":[["Frosch","Würgegeräusche machen"],"黽","r",0,"圭黽"]});

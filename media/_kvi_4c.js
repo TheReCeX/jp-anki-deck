@@ -1,0 +1,2 @@
+/* KANJIDIC2 (c) EDRDG, CC BY-SA 4.0 - https://www.edrdg.org/wiki/index.php/KANJIDIC_Project ; Bestandteile aus KanjiVG (CC BY-SA 3.0) */
+(function(d){var K=window.KVI=window.KVI||{};for(var k in d)K[k]=d[k];})({"䰗":[20,0,0,191,[],[],["a lot","a ticket","to draw lots"],[]],"䰠":[16,0,0,194,[],[],["god","spirit","immortal","mountain deity"],[]],"䳄":[16,0,0,196,[],[],["a kind of water bird","with black color","female","woman-like"],[]],"䳑":[17,0,0,196,[],[],["a pheasant-like bird"],[]]});

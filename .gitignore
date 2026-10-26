@@ -14,3 +14,9 @@ __pycache__/
 # Editor
 .vscode/
 .idea/
+
+# Build output
+dist/
+_tooling_update.tgz
+data/notes.private.jsonl
+_tooling_update*.tgz

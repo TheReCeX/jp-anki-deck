@@ -1,0 +1,2 @@
+/* KANJIDIC2 (c) EDRDG, CC BY-SA 4.0: Bedeutungen ins Deutsche übertragen; Radikal-Form/Position aus KanjiVG (CC BY-SA 3.0), Lücken aus BabelStone IDS (Andrew West); JLPT-Stufen inoffiziell nach Jonathan Waller (tanos.co.uk, CC BY) */
+(function(d){var K=window.KVX=window.KVX||{};for(var k in d)K[k]=d[k];})({"䦰":[["Lose","Lose ziehen"],"門","kamae",0,"門亀"],"䧧":[["hohe Berge","steil","erhaben"],"阝","l",0,"阝義"],"䧺":[["Männchen (Vögel)"],"隹","r",0,"右隹"]});

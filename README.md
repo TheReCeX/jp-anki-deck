@@ -5,7 +5,7 @@
   <h1 align="center">日本語 · jp-anki-deck</h1>
 
   <p align="center">
-    An Anki deck for <strong>Genki</strong> and <strong>Tobira</strong> with a kanji popup, stroke order and writing practice.
+    An Anki deck for learners of Japanese, built around <strong>Genki</strong> and <strong>Tobira</strong>, with a kanji popup, stroke order and writing practice.
     <br />
     German and English, works offline, also on your phone.
     <br />
@@ -42,6 +42,7 @@
     <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#limitations">Limitations</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#structure">Structure</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -59,7 +60,9 @@
 
 <br />
 
-A vocabulary deck for learners of Japanese, especially students of Japanese studies at the Friedrich-Alexander-University Erlangen-Nuernberg. It contains about 3,700 words from **Genki 1, Genki 2 and Tobira**, with cards in both directions (recognition and recall).
+A vocabulary deck for learners of Japanese, especially students of Japanese studies at the Friedrich-Alexander-University Erlangen-Nuernberg. It is built for the vocabulary of **Genki 1, Genki 2 and Tobira** (about 3,700 words), with cards in both directions (recognition and recall).
+
+> **Status:** The Genki and Tobira vocabulary is **not included yet**. Release v1.0 contains the card templates, the build tooling and 14 example words, so you can see and try everything. The full vocabulary will be added as soon as the licensing of some of its meanings is clarified (see [Roadmap](#roadmap)).
 
 What makes it special is the card itself:
 
@@ -82,10 +85,10 @@ What makes it special is the card itself:
 
 ### Import the deck
 
-1. Download the `.apkg` file from [Releases](https://github.com/TheReCeX/jp-anki-deck/releases).
+1. Download the `.apkg` file from [Releases](https://github.com/TheReCeX/jp-anki-deck/releases). Release v1.0 contains example words only.
 2. Open it by double-click, or in Anki via *File → Import*.
 3. On a computer, tick **"Import any deck presets"** (wording may vary by Anki version). This applies the intended options.
-4. Study through the top-level deck **Japanisch**. The guide card appears first.
+4. Study through the top-level deck **Japanisch**. The guide card appears first, the example words are in `Japanisch::Beispiel`.
 
 On iPhone, iPad and Android, import the file into the respective Anki app.
 
@@ -108,7 +111,7 @@ The **guide card** in the deck explains everything (later available in the brows
 * Cards: recognition (Japanese → meaning) and recall (meaning → Japanese)
 * Settings via the slider icon in the top right
 * Kanji popup, radical card and writing modes with numbered figures
-* Adding your own cards: fields `Expression`, `Reading` (Anki format `東京[とうきょう]`), `Bedeutung` (German), `Meaning` (English)
+* Adding your own cards (until the vocabulary is included, this is how you fill the deck): fields `Expression`, `Reading` (Anki format `東京[とうきょう]`), `Bedeutung` (German), `Meaning` (English)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -122,16 +125,26 @@ The **guide card** in the deck explains everything (later available in the brows
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Roadmap
+
+- [x] Card templates, kanji popup, writing modes, radical cards
+- [x] Build tooling: deck from plain files and back (`scripts/`)
+- [ ] Genki 1, Genki 2 and Tobira vocabulary (about 3,700 words), pending clarification of the Wadoku data license
+- [ ] Update this README, the guide card and the changelog once the vocabulary is included
+
 ## Structure
 
 | Folder | Contents |
 |---|---|
 | [`templates/`](templates/) | Card templates (HTML, CSS, JS) |
 | [`addon/`](addon/) | Source code of the Kanji-Wortindex add-on |
+| [`scripts/`](scripts/) | Scripts to export a deck to plain files and to build it again |
+| [`data/`](data/) | Notes (example words, guide card), decks and presets |
+| [`media/`](media/) | Kanji data files and font used by the cards |
 | [`docs/`](docs/) | Figures and documentation |
 | [`LICENSES/`](LICENSES/) | Full texts of all licenses |
 
-The finished deck is not stored in the repository but published under [Releases](https://github.com/TheReCeX/jp-anki-deck/releases).
+The finished deck is not stored in the repository but published under [Releases](https://github.com/TheReCeX/jp-anki-deck/releases). To build it yourself: `pip install anki zstandard`, then `python scripts/build.py` (see [`scripts/README.md`](scripts/README.md)).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -154,10 +167,10 @@ Licensed under **CC BY-SA 4.0** unless noted otherwise. Exceptions:
 | Part | License |
 |---|---|
 | Font Sawarabi Mincho | SIL Open Font License 1.1 |
-| Excerpts taken from Wadoku | Wadoku.de data license 1.0: **free and non-commercial distribution only, the license must accompany it** |
-| Genki and Tobira content | Rights held by authors and publishers, not licensed |
+| Meanings taken from Wadoku (planned Genki/Tobira vocabulary, not part of the current release) | Wadoku.de data license 1.0: **free and non-commercial distribution only, the license must accompany it** |
+| Genki and Tobira content (planned, not yet included) | Rights held by authors and publishers, not licensed |
 
-Details in [`LICENSE`](LICENSE), full texts in [`LICENSES/`](LICENSES/). The deck must not be sold. This project is not affiliated with the publishers of Genki and Tobira.
+The current release contains no Wadoku-derived text and no Genki or Tobira word lists. The license rows above will apply once the vocabulary is added. Details in [`LICENSE`](LICENSE), full texts in [`LICENSES/`](LICENSES/). The deck must not be sold. This project is not affiliated with the publishers of Genki and Tobira.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -167,7 +180,7 @@ This deck builds on free data. Many thanks to:
 
 * [KanjiVG](https://kanjivg.tagaini.net) for the stroke data
 * [KANJIDIC2](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project) (EDRDG) for kanji information
-* [Wadoku](https://www.wadoku.de) for the Japanese-German dictionary
+* [Wadoku](https://www.wadoku.de) for the Japanese-German dictionary (basis of the planned vocabulary)
 * [Jonathan Waller](https://www.tanos.co.uk/jlpt/) for the JLPT lists
 * [BabelStone IDS](https://www.babelstone.co.uk/CJK/IDS.TXT) by Andrew West for kanji structure
 * [Sawarabi Mincho](https://github.com/googlefonts/sawarabi-mincho/) for the font

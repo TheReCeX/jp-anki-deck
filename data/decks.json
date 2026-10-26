@@ -1,0 +1,268 @@
+{
+  "decks": [
+    {
+      "name": "Japanisch",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Beispiel",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Beispiel::Chapter 01",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Beispiel::Chapter 02",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Beispiel::Chapter 03",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Beispiel::Chapter 04",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 1",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 1::Chapter 01",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 1::Chapter 02",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 1::Chapter 03",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 1::Chapter 04",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 1::Chapter 05",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 1::Chapter 06",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 1::Chapter 07",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 1::Chapter 08",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 1::Chapter 09",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 1::Chapter 10",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 1::Chapter 11",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 1::Chapter 12",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 2",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 2::Chapter 13",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 2::Chapter 14",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 2::Chapter 15",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 2::Chapter 16",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 2::Chapter 17",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 2::Chapter 18",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 2::Chapter 19",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 2::Chapter 20",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 2::Chapter 21",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 2::Chapter 22",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Genki::Genki 2::Chapter 23",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Tobira Advanced",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Tobira Advanced::Chapter 01",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Tobira Advanced::Chapter 02",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Tobira Advanced::Chapter 03",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Tobira Advanced::Chapter 04",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Tobira Advanced::Chapter 05",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Tobira Advanced::Chapter 06",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Tobira Advanced::Chapter 07",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Tobira Advanced::Chapter 08",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Tobira Advanced::Chapter 09",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Tobira Advanced::Chapter 10",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Tobira Advanced::Chapter 11",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Tobira Advanced::Chapter 12",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Tobira Advanced::Chapter 13",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Tobira Advanced::Chapter 14",
+      "preset": "Japanisch (Genki/Tobira)"
+    },
+    {
+      "name": "Japanisch::Tobira Advanced::Chapter 15",
+      "preset": "Japanisch (Genki/Tobira)"
+    }
+  ],
+  "presets": [
+    {
+      "id": 1792481771288,
+      "name": "Japanisch (Genki/Tobira)",
+      "maxTaken": 60,
+      "autoplay": true,
+      "timer": 0,
+      "replayq": true,
+      "new": {
+        "bury": true,
+        "delays": [
+          1.0,
+          10.0
+        ],
+        "initialFactor": 2500,
+        "ints": [
+          1,
+          4,
+          0
+        ],
+        "order": 1,
+        "perDay": 20
+      },
+      "rev": {
+        "bury": true,
+        "ease4": 1.3,
+        "ivlFct": 1.0,
+        "maxIvl": 36500,
+        "perDay": 200,
+        "hardFactor": 1.2
+      },
+      "lapse": {
+        "delays": [
+          10.0
+        ],
+        "leechAction": 1,
+        "leechFails": 8,
+        "minInt": 1,
+        "mult": 0.0
+      },
+      "dyn": false,
+      "newMix": 0,
+      "newPerDayMinimum": 0,
+      "interdayLearningMix": 0,
+      "reviewOrder": 0,
+      "newSortOrder": 1,
+      "newGatherPriority": 0,
+      "buryInterdayLearning": true,
+      "fsrsWeights": [],
+      "fsrsParams5": [],
+      "fsrsParams6": [],
+      "desiredRetention": 0.9,
+      "ignoreRevlogsBeforeDate": "",
+      "easyDaysPercentages": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "stopTimerOnAnswer": false,
+      "secondsToShowQuestion": 0.0,
+      "secondsToShowAnswer": 0.0,
+      "questionAction": 0,
+      "answerAction": 0,
+      "waitForAudio": true,
+      "sm2Retention": 0.9,
+      "weightSearch": ""
+    }
+  ]
+}
