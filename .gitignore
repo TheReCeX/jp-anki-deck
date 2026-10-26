@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Anki-Exporte (als Release hochladen, nicht ins Repo)
+*.apkg
+*.colpkg
+
+# Python / Add-on
+__pycache__/
+*.pyc
+*.ankiaddon
+.venv/
+
+# Editor
+.vscode/
+.idea/
