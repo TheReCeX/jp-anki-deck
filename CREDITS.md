@@ -41,4 +41,6 @@ Own code under CC BY-SA 4.0 (see [`LICENSE`](LICENSE)). The add-on ships no thir
 
 AnkiWeb: <https://ankiweb.net/shared/info/1607352118> · Code `1607352118`
 
+Deck on AnkiWeb: <https://ankiweb.net/shared/info/1677060876>
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

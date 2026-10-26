@@ -17,6 +17,7 @@ First public release. **Genki and Tobira vocabulary is not included yet.** The r
 - Guide card (German and English) with licenses and sources, including the Wadoku license text
 - Optional add-on Kanji-Wortindex (also on [AnkiWeb](https://ankiweb.net/shared/info/1607352118))
 - Card templates, add-on source, license texts and credits in this repository
+- Deck also available on [AnkiWeb](https://ankiweb.net/shared/info/1677060876)
 - Build tooling in `scripts/`: export a deck to plain files (`data/`, `templates/`, `media/`) and build it again, keeping ids so re-imports update existing cards
 
 ## Planned

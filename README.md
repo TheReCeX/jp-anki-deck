@@ -11,8 +11,12 @@
     <br />
     <br />
     <a href="https://github.com/TheReCeX/jp-anki-deck/releases"><strong>Download the deck »</strong></a>
+    &middot;
+    <a href="https://ankiweb.net/shared/info/1677060876"><strong>AnkiWeb</strong></a>
     <br />
     <br />
+    <a href="https://ankiweb.net/shared/info/1677060876">Deck on AnkiWeb</a>
+    &middot;
     <a href="https://ankiweb.net/shared/info/1607352118">Add-on</a>
     &middot;
     <a href="https://github.com/TheReCeX/jp-anki-deck/issues/new">Report Bug</a>
@@ -85,7 +89,7 @@ What makes it special is the card itself:
 
 ### Import the deck
 
-1. Download the `.apkg` file from [Releases](https://github.com/TheReCeX/jp-anki-deck/releases). Release v1.0 contains example words only.
+1. Download the `.apkg` file from [Releases](https://github.com/TheReCeX/jp-anki-deck/releases), or get the deck on [AnkiWeb](https://ankiweb.net/shared/info/1677060876). The current version contains example words only.
 2. Open it by double-click, or in Anki via *File → Import*.
 3. On a computer, tick **"Import any deck presets"** (wording may vary by Anki version). This applies the intended options.
 4. Study through the top-level deck **Japanisch**. The guide card appears first, the example words are in `Japanisch::Beispiel`.
@@ -144,7 +148,7 @@ The **guide card** in the deck explains everything (later available in the brows
 | [`docs/`](docs/) | Figures and documentation |
 | [`LICENSES/`](LICENSES/) | Full texts of all licenses |
 
-The finished deck is not stored in the repository but published under [Releases](https://github.com/TheReCeX/jp-anki-deck/releases). To build it yourself: `pip install anki zstandard`, then `python scripts/build.py` (see [`scripts/README.md`](scripts/README.md)).
+The finished deck is not stored in the repository but published under [Releases](https://github.com/TheReCeX/jp-anki-deck/releases) and on [AnkiWeb](https://ankiweb.net/shared/info/1677060876). To build it yourself: `pip install anki zstandard`, then `python scripts/build.py` (see [`scripts/README.md`](scripts/README.md)).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
