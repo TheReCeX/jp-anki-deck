@@ -1,0 +1,35 @@
+================================================================================
+  jp-anki-deck — License
+================================================================================
+
+UNLESS NOTED OTHERWISE
+----------------------
+  Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+  Full text: LICENSES/CC-BY-SA-4.0.txt
+  Copyright (c) 2026 Alexander Meisinger
+
+  This covers card templates, add-on code, guide, scripts and the kanji data
+  (KanjiVG, KANJIDIC2 and others are themselves licensed under CC BY-SA,
+  see CREDITS.md).
+
+
+EXCEPTIONS
+----------
+  1. Font Sawarabi Mincho
+       SIL Open Font License 1.1
+       LICENSES/OFL-1.1-SawarabiMincho.txt
+
+  2. Excerpts taken from Wadoku (German word meanings)
+       Wadoku.de data license 1.0 (original German text)
+       LICENSES/Wadoku-Datenlizenz-1.0.txt
+       These texts are NOT under CC BY-SA. Free, non-commercial distribution
+       only; the license must accompany them.
+
+  3. Genki and Tobira content
+       Rights held by the publishers and authors. Not licensed.
+
+
+SOURCES / CREDITS
+-----------------
+  Attribution and sources: CREDITS.md
+  This is not legal advice.
